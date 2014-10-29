@@ -38,8 +38,8 @@ CREATE TABLE MovieGenre(
 CREATE TABLE MovieDirector(
     mid INT, 
     did INT,
-    FOREIGN KEY mid REFERENCES Movie(id), -- (FK2) mid must reference an existing movie
-    FOREIGN KEY did REFERENCES Director(id)) -- (FK3) did must reference an existing director
+    FOREIGN KEY (mid) REFERENCES Movie(id), -- (FK2) mid must reference an existing movie
+    FOREIGN KEY (did) REFERENCES Director(id)) -- (FK3) did must reference an existing director
     ENGINE = INNODB;
 
 CREATE TABLE MovieActor(
