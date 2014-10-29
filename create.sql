@@ -3,7 +3,8 @@ CREATE TABLE Movie(
     title VARCHAR(100), 
     year INT, 
     rating VARCHAR(10), 
-    company VARCHAR(50))
+    company VARCHAR(50),
+    CHECK (year > 0)) -- no movies made before jesus was born
     ENGINE = INNODB;
 
 CREATE TABLE Actor(
@@ -12,7 +13,8 @@ CREATE TABLE Actor(
     first VARCHAR(20), 
     sex VARCHAR(6), 
     dob DATE, 
-    dod DATE)
+    dod DATE, 
+    CHECK (sex="male" OR sex="female")) -- enforce the gender binary
     ENGINE = INNODB;
 
 CREATE TABLE Director(
@@ -20,7 +22,8 @@ CREATE TABLE Director(
     last VARCHAR(20), 
     first VARCHAR(20), 
     dob DATE, 
-    dod DATE)
+    dod DATE,
+    CHECK (dod IS NULL OR (dod > dob))) -- you can't die before you're born
     ENGINE = INNODB;
 
 CREATE TABLE MovieGenre(
