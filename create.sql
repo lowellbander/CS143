@@ -1,5 +1,5 @@
 CREATE TABLE Movie(
-    id INT, 
+    id INT PRIMARY KEY, -- every movie has a unique identification number
     title VARCHAR(100), 
     year INT, 
     rating VARCHAR(10), 
@@ -7,7 +7,7 @@ CREATE TABLE Movie(
     ENGINE = INNODB;
 
 CREATE TABLE Actor(
-    id INT, 
+    id INT PRIMARY KEY, -- every actor has a unique identification number
     last VARCHAR(20), 
     first VARCHAR(20), 
     sex VARCHAR(6), 
@@ -16,7 +16,7 @@ CREATE TABLE Actor(
     ENGINE = INNODB;
 
 CREATE TABLE Director(
-    id INT, 
+    id INT PRIMARY KEY, -- every director has a unique primary key
     last VARCHAR(20), 
     first VARCHAR(20), 
     dob DATE, 
