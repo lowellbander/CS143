@@ -20,6 +20,13 @@ WHERE id IN (
 
 -- Give me the count of all the actors who acted in multiple movies.
 
+SELECT COUNT(*)
+FROM (
+    SELECT COUNT(*) AS n
+    FROM MovieActor
+    GROUP BY aid) AS counts
+WHERE n > 1;
+
 -- another query that you came up with
 /* First and last names of all actors and actresses who have played themselved in movies */
 
