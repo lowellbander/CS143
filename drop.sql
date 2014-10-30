@@ -1,1 +1,1 @@
-DROP TABLE Actor, Director, MaxMovieID, MaxPersonID, Movie, MovieActor, MovieDirector, MovieGenre, Review;
+DROP TABLE MaxMovieID, MaxPersonID, MovieActor, MovieDirector, MovieGenre, Review, Actor, Director, Movie;
