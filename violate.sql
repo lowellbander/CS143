@@ -39,12 +39,32 @@ VALUES (68626);
 
 -- (CHECK1) no movies made before jesus was born 
 
+INSERT INTO Movie (year)
+VALUES (-20);
+
+/* Because of the check constraint, Movie.year must be a nonnegative number.
+ * Because -20 is negative, the INSERT will be rejected.
+ */
 
 -- (CHECK2) enforce the gender binary 
 
+INSERT INTO Actor (sex)
+VALUES ("trans");
+
+/* Because of the check constraint, the value of Actor.sex must either be "male"
+ * or "female". Because "trans" is neither of these, the bigendered check
+ * constraint will reject this INSERT.
+ */
 
 -- (CHECK3) you can't die before you're born
 
+INSERT INTO Actor (dob, dod)
+VALUES ('2010-01-01', '1994-01-01');
+
+/* Because of the check constraint, Actor.dob must be beore Actor.dod. Because
+ * the values given in this INSERT statement violate the check constraint, the
+ * INSERT will be rejected.
+ */
 
 -- (FK1) mid must reference an existing movie
 
