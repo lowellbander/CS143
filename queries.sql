@@ -19,5 +19,17 @@ WHERE id IN (
 );*/
 
 -- Give me the count of all the actors who acted in multiple movies.
+SELECT COUNT (*) 
+FROM (
+    SELECT aid 
+    FROM MovieActor
+    GROUP BY aid
+    HAVING COUNT(mid>1)
+) actorIDs;
+
 
 -- another query that you came up with
+/* This query prints out the names of all the movies which are both romance and
+ * comedy. */
+
+ 
