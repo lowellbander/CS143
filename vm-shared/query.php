@@ -32,24 +32,33 @@
 
             print "<b>YOUR QUERY: </b>$sanitized_query<br><br>";
             print "<b>nFields: </b>$nFields<br><br>";
-
+            
+            print "<table border=1>";
+            
             for ($i = 0; $i < $nFields; $i++) {
                 $fields = mysql_fetch_field($rs, $i);
+                print "<th>";
                 print $fields->name;
-                print ", ";
+                // print ", ";
+                print "</th>";
             }
-                print "<br>";
+        //        print "<br>";
 
 		    while($row = mysql_fetch_row($rs)) {
                 $printme = "";
+                print "<tr>";
                 for ($i = 0; $i < $nFields; $i++) {
+                    print "<td>";
                     $printme += $row[$i] + ", ";
                     print $row[$i];
-                    print ", ";
+                    print "</td>";
+                    // print ", ";
                 }
-                print "<br>";
-		    }
 
+                //print "<br>";
+                print "</tr>";
+            }
+            print "</table>";
 		    // close the connection when done
 		    mysql_close($db_connection);
         }
