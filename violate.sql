@@ -9,12 +9,33 @@
 
 -- (PK1) every movie has a unique identification number 
 
+INSERT INTO Movie (id)
+VALUES (2000);
+
+/* Because Movie.id is a primary key, there can be no two entries in the Movie
+ * table with identical id's. Because there is already an existing Movie with id
+ * of 2000, this INSERT statement violates the primary key constraint.
+ */
 
 -- (PK2) every actor has a unique identification number 
 
+INSERT INTO Actor (id)
+VALUES (1000);
+
+/* Because Actor.id is a primary key, there can be no two entries in the Actor
+ * table with identical id's. Because there is already an existing Actor with id
+ * of 1000, this INSERT statement violates the primary key constraint.
+ */
 
 -- (PK3) every director has a unique primary key
 
+INSERT INTO Director (id)
+VALUES (68626);
+
+/* Because Director.id is a primary key, there can be no two entries in the Actor
+ * table with identical id's. Because there is already an existing Director with id
+ * of 68626, this INSERT statement violates the primary key constraint.
+ */
 
 -- (CHECK1) no movies made before jesus was born 
 
