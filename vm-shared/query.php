@@ -33,12 +33,19 @@
             print "<b>YOUR QUERY: </b>$sanitized_query<br><br>";
             print "<b>nFields: </b>$nFields<br><br>";
 
+            for ($i = 0; $i < $nFields; $i++) {
+                $fields = mysql_fetch_field($rs, $i);
+                print $fields->name;
+                print ", ";
+            }
+                print "<br>";
+
 		    while($row = mysql_fetch_row($rs)) {
                 $printme = "";
                 for ($i = 0; $i < $nFields; $i++) {
                     $printme += $row[$i] + ", ";
                     print $row[$i];
-                    print " ";
+                    print ", ";
                 }
                 print "<br>";
 		    }
@@ -47,7 +54,6 @@
 		    mysql_close($db_connection);
         }
 	?>
-
 
 	</body>
 </html>
