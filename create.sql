@@ -67,4 +67,3 @@ CREATE TABLE MaxMovieID(
     id INT)
     ENGINE = INNODB;
 
-
