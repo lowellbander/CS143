@@ -19,17 +19,18 @@ WHERE id IN (
 );*/
 
 -- Give me the count of all the actors who acted in multiple movies.
-SELECT COUNT (*) 
-FROM (
-    SELECT aid 
-    FROM MovieActor
-    GROUP BY aid
-    HAVING COUNT(mid>1)
-) actorIDs;
-
 
 -- another query that you came up with
-/* This query prints out the names of all the movies which are both romance and
- * comedy. */
+/* First and last names of all actors and actresses who have played themselved in movies */
+
+SELECT first, last 
+FROM Actor 
+WHERE id 
+IN (
+	SELECT aid 
+	FROM MovieActor 
+	WHERE role="Himself" OR role="Herself"
+   );
+
 
  
