@@ -31,7 +31,7 @@
             $nFields = mysql_num_fields($rs);
 
             print "<b>YOUR QUERY: </b>$sanitized_query<br><br>";
-            print "<b>nFields: </b>$nFields<br><br>";
+            //print "<b>nFields: </b>$nFields<br><br>";
             
             print "<table border=1>";
             
