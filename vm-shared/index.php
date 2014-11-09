@@ -3,9 +3,14 @@
     <head>
         <title>BBDB - Bakshi Bander Database</title>
         <style>
-            .nav {
+        	body{
+        		width: 800px;
+        		margin: 0 auto;
+        	}
+            #nav {
                 float: left;
                 width:24%;
+                display: inline;
             }
             .content {
                 float: right;
