@@ -17,7 +17,7 @@
         <h1>BBDB - Bakshi Bander Database</h1>
         <div>
             <iframe class="view nav" name="nav" src="nav.php"></iframe>
-            <iframe class="view content" name="content" src="content.php"></iframe>
+            <iframe class="view content" name="content" src="results.php"></iframe>
         </div>
     </body>
 <html>
