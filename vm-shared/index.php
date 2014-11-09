@@ -7,10 +7,11 @@
         		width: 800px;
         		margin: 0 auto;
         	}
-            #nav{
+            #nav li{
                 float: left;
                 width:24%;
-                
+                display: inline;
+   
             }
             .content {
                 float: right;
@@ -28,8 +29,8 @@
                 <li><a href="./addActorMovie.php">Add Actor to Movie</a></li>
                 <li><a href="./adddirectorMovie.php">Add Director to Movie</a></li>
                 <br>
-                <li><a href="Show Actor info"></li>
-                <li><a href="Show Movie info"></li>
+                <li><a href="./showActor.php">Show Actor info</li>
+                <li><a href="./showMovieInfo.php">Show Movie info</li>
             </ul>
         </div>
     </body>
