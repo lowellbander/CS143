@@ -7,10 +7,10 @@
         		width: 800px;
         		margin: 0 auto;
         	}
-            #nav li{
+            #nav{
                 float: left;
                 width:24%;
-                display: inline;
+                
             }
             .content {
                 float: right;
