@@ -26,11 +26,10 @@
 		    mysql_select_db("CS143", $db_connection);
 
             $query = $_GET["query"];
-            $sanitized_query = mysql_real_escape_string($query, $db_connection);
-            $rs = mysql_query($sanitized_query, $db_connection);
+            $rs = mysql_query($query, $db_connection);
             $nFields = mysql_num_fields($rs);
 
-            print "<b>YOUR QUERY: </b>$sanitized_query<br><br>";
+            print "<b>YOUR QUERY: </b>$query<br><br>";
             
             print "<table border=1>";
             
