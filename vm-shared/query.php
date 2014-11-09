@@ -31,7 +31,6 @@
             $nFields = mysql_num_fields($rs);
 
             print "<b>YOUR QUERY: </b>$sanitized_query<br><br>";
-            //print "<b>nFields: </b>$nFields<br><br>";
             
             print "<table border=1>";
             
@@ -39,10 +38,8 @@
                 $fields = mysql_fetch_field($rs, $i);
                 print "<th>";
                 print $fields->name;
-                // print ", ";
                 print "</th>";
             }
-        //        print "<br>";
 
 		    while($row = mysql_fetch_row($rs)) {
                 $printme = "";
@@ -52,10 +49,8 @@
                     $printme += $row[$i] + ", ";
                     print $row[$i];
                     print "</td>";
-                    // print ", ";
                 }
 
-                //print "<br>";
                 print "</tr>";
             }
             print "</table>";
