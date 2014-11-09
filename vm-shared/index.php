@@ -11,6 +11,7 @@
                 float: left;
                 width:24%;
                 display: inline;
+                margin-bottom: 10px;
    
             }
             .content {
