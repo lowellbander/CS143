@@ -18,10 +18,28 @@
             $query = "SELECT * FROM Movie WHERE id = " . $id . ";";
             $movie = query($query);
 
+            $directorID = "";
+            $director = ""; 
+            $dIDQuery = "SELECT * FROM MovieDirector WHERE  mid = " . $id . ";";
+            $dctorIDResult = query($dIDQuery);
+            $IDrow = mysql_fetch_array($dctorIDResult);
+            $directorID = $IDrow['did'];
+            
+            $dQuery = "SELECT * FROM Director WHERE  id = " . $directorID . ";";
+            $dctorResult = query($dQuery);
+            $dRow = mysql_fetch_array($dctorResult);
+            $director = $dRow['first'] . " " . $dRow['last'];
+            
+            $gQuery = "SELECT * FROM MovieGenre WHERE mid = " . $id . ";";
+            $gQueryResult = query($gQuery);
+            
+
+
             $title = "";
             $year = "";
             $rating = "";
             $company = "";
+            $genres = "";
 
             while ($row = mysql_fetch_array($movie)) {
                 $title = $row['title'];
@@ -35,6 +53,18 @@
             print "Title: $title ($year)<br>";
             print "Rating: $rating<br>";
             print "Producer: $company<br>";
+            print "Director: $director<br>";
+            print "Genres: ";
+            $gRow = mysql_fetch_array($gQueryResult);
+            print $gRow['genre'];
+
+            while ($gRow = mysql_fetch_array($gQueryResult)){
+                print ", ";
+                print $gRow['genre'];
+            }
+            print ".";
+
+            // genre
 
             // which movies have they acted in?
             
