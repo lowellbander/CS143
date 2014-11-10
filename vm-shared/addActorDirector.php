@@ -52,8 +52,8 @@
 
             $dob = $_GET['dob'];
             $dod = $_GET['dod'];
-
-            $query = "INSERT INTO " . $table . " VALUES (" . $maxID+1 . ",\"" . $last . "\",\"" . $first . "\",\"" . $sex ."\",\"" . $dob ."\",\"" . $dod ."\");";
+            $newID = $maxID + 1;
+            $query = "INSERT INTO " . $table . " VALUES (" . $newID . ",\"" . $last . "\",\"" . $first . "\",\"" . $sex ."\",\"" . $dob ."\",\"" . $dod ."\");";
 
             // execute query
             
@@ -61,10 +61,10 @@
             
             // echo success or failure
             if ($rs) {
-                print "<b>INSERT/UPDATE/DELETE was successful</b>";
+                print "<b>Sucessfully added Actor/Director!</b>";
 
                 //Updating the maxID now
-                $updateIDQuery = "UPDATE MaxPersonID SET id = " . $maxID + 1 . "WHERE id = " . $maxID ";";
+                $updateIDQuery = "UPDATE MaxPersonID SET id = " . $newID . " WHERE id = " . $maxID . ";";
                 $updateIDresult = query($updateIDQuery);
                 if(!$updateIDresult)
                 {
