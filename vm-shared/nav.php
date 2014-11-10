@@ -5,7 +5,7 @@
     </head>
     <body>
         <h1>Navigation</h1>
-        <form>
+        <form action="./results.php" method="GET">
             <input type="text">
             <input type="submit" value="search">
         </form>

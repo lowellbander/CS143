@@ -19,6 +19,21 @@
     </body>
     <?php
         include 'exe_q.php';
+
+        //get Max person ID
+        $getCurrentMaxQuery = "SELECT * FROM MaxPersonID";
+        $maxID = '';
+        $result = query($getCurrentMaxQuery);
+        if(is_resource($result)){
+            $row1 = mysql_fetch_row($result);
+            $maxID = $row1[0];
+        }
+        else if($result){
+            print "<br>Fetching the maxPersonID returned true instead of resource";
+        }
+        else{
+            print "Getting current max query returned false";
+        }
         
         if (!empty($_GET['role'])) {
 
@@ -38,7 +53,7 @@
             $dob = $_GET['dob'];
             $dod = $_GET['dod'];
 
-            $query = "INSERT INTO " . $table . " VALUES (1237,\"" . $last . "\",\"" . $first . "\",\"" . $sex ."\",\"" . $dob ."\",\"" . $dod ."\");";
+            $query = "INSERT INTO " . $table . " VALUES (" . $maxID+1 . ",\"" . $last . "\",\"" . $first . "\",\"" . $sex ."\",\"" . $dob ."\",\"" . $dod ."\");";
 
             // execute query
             
@@ -47,6 +62,15 @@
             // echo success or failure
             if ($rs) {
                 print "<b>INSERT/UPDATE/DELETE was successful</b>";
+
+                //Updating the maxID now
+                $updateIDQuery = "UPDATE MaxPersonID SET id = " . $maxID + 1 . "WHERE id = " . $maxID ";";
+                $updateIDresult = query($updateIDQuery);
+                if(!$updateIDresult)
+                {
+                    print "Failed to update ID. Further updates will likely fail.";
+                }
+
             } else {
                     print "<b>Sorry bro, bad SQL. Maybe invalid syntax, or the command violated a CHECK constraint. Bummer.</b>";
             }
