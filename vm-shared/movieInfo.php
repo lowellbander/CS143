@@ -63,15 +63,15 @@
             $scoreCountRow = mysql_fetch_array($scoreCountQuery);
             $scoreCount = $scoreCountRow['count'];
 
+            print "<b><a href='./addReview.php?id=" . $id . "'>Add your review!</a></b><br>";
             print "<h3>User Reviews:</h3><br>";
-            print "<p>Average score: " . $avgScore . "/5 (5.0 is best) by " . $scoreCount . " reviews.";
-            print "<a href='./addReview.php?id=" . $id . ">Add your review!</a>";
+            print "Out of $scoreCount reviews, the average rating is $avgScore out of 5.0.";
 
 
             $reviewQuery = "SELECT * FROM Review WHERE mid=" . $id . ";";
             $movieReviews = query($reviewQuery);
             while($row = mysql_fetch_array($movieReviews)){
-                print "On " . $movieReviews['time'] . ", " . $movieReviews['name'] . " said " . $movieReviews['comment'] .".<br>";
+                print "On " . $row['time'] . ", " . $row['name'] . " said " . $row['comment'] .".<br>";
             }
 
         }
