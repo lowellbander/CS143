@@ -41,20 +41,27 @@
 
             // which movies have they acted in?
             
-            print "<h3>$name has acted in the following films</h3><br>";
+            $filmCount = query("SELECT COUNT(*) AS num FROM MovieActor WHERE aid=" . $id . ";");
+            $countRow = mysql_fetch_array($filmCount);
+            if($countRow['num'] == 0)
+                print "<h3>$name has not acted in any films</h3><br>"; 
+            else{
+                print "<h3>$name has acted in the following films</h3><br>";
 
-            $query = "SELECT DISTINCT * FROM MovieActor WHERE aid=" . $id . ";";
-            $movieActors = query($query);
-            while ($row = mysql_fetch_array($movieActors)) {
-                $mid = $row['mid'];
-                $role = $row['role'];
+                $query = "SELECT DISTINCT * FROM MovieActor WHERE aid=" . $id . ";";
+                $movieActors = query($query);
+                while ($row = mysql_fetch_array($movieActors)) {
+                    $mid = $row['mid'];
+                    $role = $row['role'];
+                
+                    $title = "";
+                    $movie = query("SELECT title FROM Movie WHERE id=" . $mid . ";");
+                    while ($row = mysql_fetch_array($movie))
+                        $title = $row['title'];
+
+                    print "Played the role of $role in <a href='./movieInfo.php?id=$mid'>$title<a>.<br>";
+            }
             
-                $title = "";
-                $movie = query("SELECT title FROM Movie WHERE id=" . $mid . ";");
-                while ($row = mysql_fetch_array($movie))
-                    $title = $row['title'];
-
-                print "Played the role of $role in <a href='./movieInfo.php?id=$mid'>$title<a>.<br>";
             }
 
         }
