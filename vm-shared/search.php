@@ -4,7 +4,7 @@
         <title>BBDB - Bakshi Bander Database</title>
         <style>
         	body{
-        		width: 800px;
+        		width: 40em;
         		margin: 0 auto;
         	}
             #nav li{
@@ -14,13 +14,9 @@
                 margin-bottom: 10px;
    
             }
-            .content {
-                float: right;
-                width:74%;
-            }
         </style>
     </head>
-    <body style="overflow:hidden">
+    <body>
         <h1>BBDB - Bakshi Bander Database</h1>
         <div id="nav">
             <ul>
@@ -45,14 +41,14 @@
                     }
                     //search actors
 
-                    $searchActorQuery = 'SELECT id,first, last, dob FROM Actor WHERE ';
+                    $searchActorQuery = 'SELECT id, first, last, dob FROM Actor WHERE ';
                     for($i = 0; $i < count($searchTerms) ; $i++)
                     {
                          $searchActorQuery .= "first LIKE '%" . $searchTerms[$i] . "%' OR  last LIKE '%" . $searchTerms[$i] . "%'" ;
                     }
                     
                     $searchActorQuery .= ";";
-                    print $searchActorQuery;
+                    print "<br>";
                     
                     $actorResult = query($searchActorQuery);
                     if($actorResult){
@@ -69,13 +65,13 @@
 
                     //search movies now
 
-                    $searchMovieQuery = "SELECT id,title,year FROM Movie WHERE title LIKE '%" . $searchTerms[0] . "%'";
-                    for($i = 1; i < count($searchTerms) ; $i++)
+                    $searchMovieQuery = "SELECT id, title, year FROM Movie WHERE title LIKE '%" . $searchTerms[0] . "%'";
+                    
+                    for($i = 1; $i < count($searchTerms) ; $i++)
                     {
                         $searchMovieQuery .= "OR title LIKE '%" . $searchTerms[$i] . "%'";
                     }
                     $searchMovieQuery .= ";";
-                    print $searchMovieQuery;
                     
                     $movieResult = query($searchMovieQuery);
                     
