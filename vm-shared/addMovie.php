@@ -18,7 +18,7 @@
         include 'exe_q.php';
 
         //get Max movie ID
-        $getCurrentMaxQuery = "SELECT * FROM MaxPersonID";
+        $getCurrentMaxQuery = "SELECT * FROM MaxMovieID;";
         $maxID = '';
         $result = query($getCurrentMaxQuery);
         if(is_resource($result)){
@@ -26,31 +26,24 @@
             $maxID = $row1[0];
         }
         else if($result){
-            print "<br>Fetching the maxPersonID returned true instead of resource";
+            print "<br>Fetching the maxMovieID returned true instead of resource";
         }
         else{
             print "Getting current max query returned false";
         }
         
-        if (!empty($_GET['role'])) {
+        if (!empty($_GET['title'])) {
 
             //build SQL query from URL params
-            
-            $table = '';
-            if ($_GET['role'] == "actor") $table = 'Actor';
-            else $table = 'Director';
 
-            $first = $_GET['first'];
-            $last = $_GET['last'];
-            
-            $sex = "";
-            if ($_GET['sex'] == "male") $sex = 'Male';
-            else $sex = 'Female';
+            $title = $_GET['title'];
+            $year = $_GET['year'];
+            $rating = $_GET['rating'];
+            $company = $_GET['company'];
 
-            $dob = $_GET['dob'];
-            $dod = $_GET['dod'];
             $newID = $maxID + 1;
-            $query = "INSERT INTO " . $table . " VALUES (" . $newID . ",\"" . $last . "\",\"" . $first . "\",\"" . $sex ."\",\"" . $dob ."\",\"" . $dod ."\");";
+
+            $query = "INSERT INTO Movie VALUES (" . $newID . ",'" . $title . "'," . $year .",'" . $rating ."','" . $company ."');";
 
             // execute query
             
@@ -58,10 +51,10 @@
             
             // echo success or failure
             if ($rs) {
-                print "<b>Sucessfully added Actor/Director!</b>";
+                print "<b>Sucessfully added Movie!</b>";
 
                 //Updating the maxID now
-                $updateIDQuery = "UPDATE MaxPersonID SET id = " . $newID . " WHERE id = " . $maxID . ";";
+                $updateIDQuery = "UPDATE MaxMovieID SET id = " . $newID . " WHERE id = " . $maxID . ";";
                 $updateIDresult = query($updateIDQuery);
                 if(!$updateIDresult)
                 {
