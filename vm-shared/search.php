@@ -27,29 +27,31 @@
                 <li><a href="./index.php">Index</a></li>
             </ul>
         </div>
-        <form>
+        <form action="./search.php" method="GET">
             Search : <input type="text" name="search">
             <input type="submit" value="Search Actor/Movie">
         </form>
     </body>
     <?php
                 if (!empty($_GET['search'])) {
+                    include_once 'exe_q.php';
+
                     $searchString = $_GET['search'];
-                    $searchTerms = explode(' ', $searchString);
+                     $searchTerms = explode(' ', $searchString);
                     if(!$searchTerms || count($searchTerms) == 0){
                         //TODO: do nothing 
+                        print "Nothing in search terms";
                         exit(1);
                     }
-
                     //search actors
 
                     $searchActorQuery = 'SELECT id,first, last, dob FROM Actor WHERE ';
-                    for($i = 0; i < count($searchTerms) ; $i++)
+                    for($i = 0; $i < count($searchTerms) ; $i++)
                     {
-                        $searchActorQuery . "first LIKE %" . $searchTerms[$i] . "% OR  last LIKE %" . $searchTerms[$i] . "%" ;
+                         $searchActorQuery .= "first LIKE '%" . $searchTerms[$i] . "%' OR  last LIKE '%" . $searchTerms[$i] . "%'" ;
                     }
-
-                    $searchActorQuery . ";";
+                    
+                    $searchActorQuery .= ";";
                     print $searchActorQuery;
                     
                     $actorResult = query($searchActorQuery);
@@ -67,12 +69,12 @@
 
                     //search movies now
 
-                    $searchMovieQuery = 'SELECT id,title,year FROM Movie WHERE ';
-                    for($i = 0; i < count($searchTerms) ; $i++)
+                    $searchMovieQuery = "SELECT id,title,year FROM Movie WHERE title LIKE '%" . $searchTerms[0] . "%'";
+                    for($i = 1; i < count($searchTerms) ; $i++)
                     {
-                        $searchMovieQuery . "first LIKE %" . $searchTerms[$i] . "% OR  last LIKE %" . $searchTerms[$i] . "%" ;
+                        $searchMovieQuery .= "OR title LIKE '%" . $searchTerms[$i] . "%'";
                     }
-                    $searchMovieQuery . ";";
+                    $searchMovieQuery .= ";";
                     print $searchMovieQuery;
                     
                     $movieResult = query($searchMovieQuery);
