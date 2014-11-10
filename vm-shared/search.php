@@ -41,15 +41,57 @@
                         exit(1);
                     }
 
+                    //search actors
+
+                    $searchActorQuery = 'SELECT id,first, last, dob FROM Actor WHERE ';
+                    for($i = 0; i < count($searchTerms) ; $i++)
+                    {
+                        $searchActorQuery . "first LIKE %" . $searchTerms[$i] . "% OR  last LIKE %" . $searchTerms[$i] . "%" ;
+                    }
+
+                    $searchActorQuery . ";";
+                    print $searchActorQuery;
                     
+                    $actorResult = query($searchActorQuery);
+                    if($actorResult){
+                        print "<ul>";
+                        while($row = mysql_fetch_array($actorResult)){
+                            print "<li>Actor: <a href='./actorInfo.php?id=" . $row['id'] . "'>" . $row['first'] . " " . $row['last'] . " (" . $row['dob'] . ")</a></li>";
+                        }
+                        print "</ul>";
+
+                    }
+                    else{
+                        print "Failed actor search. Go to LA and find some!";
+                    }
+
+                    //search movies now
+
+                    $searchMovieQuery = 'SELECT id,title,year FROM Movie WHERE ';
+                    for($i = 0; i < count($searchTerms) ; $i++)
+                    {
+                        $searchMovieQuery . "first LIKE %" . $searchTerms[$i] . "% OR  last LIKE %" . $searchTerms[$i] . "%" ;
+                    }
+                    $searchMovieQuery . ";";
+                    print $searchMovieQuery;
+                    
+                    $movieResult = query($searchMovieQuery);
+                    
+                    if($movieResult){
+                        print "<ul>";
+                        while($row = mysql_fetch_array($movieResult)){
+                             print "<li>Movie: <a href='./movieInfo.php?id=" . $row['id'] . "'>" . $row['title'] . " (" . $row['year'] . ")</a></li>";
+                        }
+                        print "</ul>";
+                    }
+                    else{
+                        print "Failed movie search. Go to LA and find some!";
+                    }
+
+                }
+                else{
+                    //do nothing
                 }
 
     ?>
 <html>
-
-//Get search string
-//tokenize based on 'spaces'
-//conduct search on actor and movie based on tokens
-//merge actor results into one
-//merge movie results into one
-//wildcards at the end? what about beginning?
