@@ -61,8 +61,7 @@
 
             } else if  ($rs) {
                 // INSERT/UPDATE/DELETE was successful
-
-                print "<b>INSERT/UPDATE/DELETE was successful</b>";
+                print "<b>Successfully added Actor/Direcor! Rejoice!</b>";
             } else {
                 // invalid SQL query
                 print "<b>Sorry bro, bad SQL. Maybe invalid syntax, or the command violated a CHECK constraint. Bummer.</b>";
