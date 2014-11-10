@@ -54,7 +54,11 @@
             $dob = $_GET['dob'];
             $dod = $_GET['dod'];
             $newID = $maxID + 1;
-            $query = "INSERT INTO " . $table . " VALUES (" . $newID . ",\"" . $last . "\",\"" . $first . "\",\"" . $sex ."\",\"" . $dob ."\",\"" . $dod ."\");";
+
+            if ($table == "Actor") 
+                $query = "INSERT INTO " . $table . " VALUES (" . $newID . ",\"" . $last . "\",\"" . $first . "\",\"" . $sex ."\",\"" . $dob ."\",\"" . $dod ."\");";
+            else
+                $query = "INSERT INTO " . $table . " VALUES (" . $newID . ",\"" . $last . "\",\"" . $first . "\",\"" . $dob ."\",\"" . $dod ."\");";
 
             // execute query
             
