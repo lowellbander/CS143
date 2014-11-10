@@ -40,7 +40,7 @@
             
             print "<h3>Actors in this movie:</h3><br>";
 
-            $query = "SELECT * FROM MovieActor WHERE mid=" . $id . ";";
+            $query = "SELECT DISTINCT * FROM MovieActor WHERE mid=" . $id . ";";
             $movieActors = query($query);
             while ($row = mysql_fetch_array($movieActors)) {
                 $aid = $row['aid'];
