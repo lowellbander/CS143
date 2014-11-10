@@ -54,6 +54,26 @@
                 print "<a href='./actorInfo.php?id=$aid'>$name</a> played the role of $role.<br>";
             }
 
+            //show movie reviews
+            $scoreQuery = query("SELECT AVG(rating) FROM Review WHERE mid=" . $id . ";") ;
+            $avgScoreRow = mysql_fetch_array($scoreQuery);
+            $avgScore = $avgScoreRow['AVG(rating)'];
+
+            $scoreCountQuery = query("SELECT COUNT(*) AS count FROM Review WHERE mid=" . $id . ";");
+            $scoreCountRow = mysql_fetch_array($scoreCountQuery);
+            $scoreCount = $scoreCountRow['count'];
+
+            print "<h3>User Reviews:</h3><br>";
+            print "<p>Average score: " . $avgScore . "/5 (5.0 is best) by " . $scoreCount . " reviews.";
+            print "<a href='./addReview.php?id=" . $id . ">Add your review!</a>";
+
+
+            $reviewQuery = "SELECT * FROM Review WHERE mid=" . $id . ";";
+            $movieReviews = query($reviewQuery);
+            while($row = mysql_fetch_array($movieReviews)){
+                print "On " . $movieReviews['time'] . ", " . $movieReviews['name'] . " said " . $movieReviews['comment'] .".<br>";
+            }
+
         }
 
     ?>
