@@ -63,9 +63,9 @@
             $scoreCountRow = mysql_fetch_array($scoreCountQuery);
             $scoreCount = $scoreCountRow['count'];
 
-            print "<b><a href='./addReview.php?id=" . $id . "'>Add your review!</a></b><br>";
+            print "<br><b><a href='./addReview.php?id=" . $id . "'>Add your review!</a></b><br>";
             print "<h3>User Reviews:</h3><br>";
-            print "Out of $scoreCount reviews, the average rating is $avgScore out of 5.0.";
+            print "Out of $scoreCount reviews, the average rating is $avgScore out of 5.0.<br><br>";
 
 
             $reviewQuery = "SELECT * FROM Review WHERE mid=" . $id . ";";
