@@ -28,7 +28,7 @@
                 <br>
                 <li><a href="./addActorDirector.php">Add Actor/Director</a></li>
                 <li><a href="./addActorMovie.php">Add Actor to Movie</a></li>
-                <li><a href="./adddirectorMovie.php">Add Director to Movie</a></li>
+                <li><a href="./addDirectorMovie.php">Add Director to Movie</a></li>
                 <br>
                 <li><a href="./showActor.php">Show Actor info</a></li>
                 <li><a href="./showMovieInfo.php">Show Movie info</a></li>
