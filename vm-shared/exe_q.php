@@ -11,7 +11,7 @@
 
     $query = $query_string;
 
-    print "<br><b>your query: </b>$query<br><br>";
+    //print "<br><b>your query: </b>$query<br><br>";
     mysql_query("USE CS143;");
     $rs = mysql_query($query, $db_connection);
     

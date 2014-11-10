@@ -2,19 +2,6 @@
 <html>
     <head>
         <title>BBDB - Bakshi Bander Database</title>
-        <style>
-        	body{
-        		width: 800px;
-        		margin: 0 auto;
-        	}
-            #nav li{
-                float: left;
-                width:24%;
-                display: inline;
-                margin-bottom: 10px;
-   
-            }
-        </style>
     </head>
     <body>
         <h1>BBDB - Bakshi Bander Database</h1>
