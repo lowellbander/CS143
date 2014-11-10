@@ -9,8 +9,14 @@
         <form>
             Title: <input type="text" name="title"><br>
             Year: <input type="text" name="year"><br>
-            Rating: <input type="text" name="rating"><br>
             Company: <input type="text" name="company"><br>
+            MPAA Rating: <select name="rating">
+            <option value="G">G</option>
+            <option value="PG-13">PG-13</option>
+            <option value="PG">PG</option>
+            <option value="R">R</option>
+            <option value="NC-17">NC-17</option>
+            </select>
             <input type="submit" value="Add Movie">
         </form>
     </body>
