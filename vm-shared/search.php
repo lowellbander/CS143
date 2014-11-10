@@ -41,15 +41,15 @@
                     }
                     //search actors
 
-                    $searchActorQuery = 'SELECT DISTINCT id, first, last, dob FROM Actor WHERE ';
-                    for($i = 0; $i < count($searchTerms) ; $i++)
+                    $searchActorQuery = "SELECT DISTINCT id, first, last, dob FROM Actor WHERE first LIKE '%" . $searchTerms[0] . "%' OR last LIKE '%" . $searchTerms[0] . "%' ";
+                    for($i = 1; $i < count($searchTerms) ; $i++)
                     {
-                         $searchActorQuery .= "first LIKE '%" . $searchTerms[$i] . "%' OR  last LIKE '%" . $searchTerms[$i] . "%'" ;
+                        $searchActorQuery .= "OR first LIKE '%" . $searchTerms[$i] . "%' OR  last LIKE '%" . $searchTerms[$i] . "%' " ;
                     }
                     
                     $searchActorQuery .= ";";
                     print "<br>";
-                    
+
                     $actorResult = query($searchActorQuery);
                     if($actorResult){
                         print "<ul>";
@@ -65,11 +65,11 @@
 
                     //search movies now
 
-                    $searchMovieQuery = "SELECT DISTINCT id, title, year FROM Movie WHERE title LIKE '%" . $searchTerms[0] . "%'";
+                    $searchMovieQuery = "SELECT DISTINCT id, title, year FROM Movie WHERE title LIKE '%" . $searchTerms[0] . "%' ";
                     
                     for($i = 1; $i < count($searchTerms) ; $i++)
                     {
-                        $searchMovieQuery .= "OR title LIKE '%" . $searchTerms[$i] . "%'";
+                        $searchMovieQuery .= "OR title LIKE '%" . $searchTerms[$i] . "%' ";
                     }
                     $searchMovieQuery .= ";";
                     
