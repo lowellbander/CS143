@@ -14,13 +14,9 @@
                 margin-bottom: 10px;
    
             }
-            .content {
-                float: right;
-                width:74%;
-            }
         </style>
     </head>
-    <body style="overflow:hidden">
+    <body>
         <h1>BBDB - Bakshi Bander Database</h1>
         <div id="nav">
             <ul>
