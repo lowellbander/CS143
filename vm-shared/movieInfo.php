@@ -54,6 +54,8 @@
                 print "<a href='./actorInfo.php?id=$aid'>$name</a> played the role of $role.<br>";
             }
 
+            print "<br><b><a href='./addReview.php?id=$id'>Review this movie!</a></b>";
+
         }
 
     ?>
