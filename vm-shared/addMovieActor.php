@@ -4,6 +4,7 @@
         <title>Add An Actor to a Movie</title>
     </head>
     <body>
+        <a href="./index.php"><- Go Home<a><br>
         <h1>Add An Actor to a Movie</h1>
     </body>
     <?php

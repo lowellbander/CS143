@@ -4,6 +4,7 @@
         <title>Add a Director to a Movie</title>
     </head>
     <body>
+        <a href="./index.php"><- Go Home<a><br>
         <h1>Add a Director to a Movie</h1>
     </body>
     <?php

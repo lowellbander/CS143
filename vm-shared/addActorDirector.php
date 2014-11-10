@@ -4,6 +4,7 @@
         <title>Add An Actor or Director</title>
     </head>
     <body>
+        <a href="./index.php"><- Go Home<a><br>
         <h1>Add An Actor or Director</h1>
         <form>
             Role: <input checked="checked" type="radio" name="role" value="actor">Actor
