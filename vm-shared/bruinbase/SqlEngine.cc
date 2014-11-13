@@ -131,6 +131,16 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
 RC SqlEngine::load(const string& table, const string& loadfile, bool index)
 {
   /* your code here */
+    
+    ifstream inputStream;
+    RecordFile rf;
+
+    //use c_str() to avoid problems with null char in filenames
+    inputStream.open(loadfile.c_str(), std::ifstream::in);
+            
+    RC status = rf.open((table + ".tbl").c_str(), 'w');
+    if(status < 0)
+        return status;
 
   return 0;
 }
