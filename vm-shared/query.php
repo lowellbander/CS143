@@ -26,39 +26,47 @@
 		    mysql_select_db("CS143", $db_connection);
 
             $query = $_GET["query"];
-            $sanitized_query = mysql_real_escape_string($query, $db_connection);
-            $rs = mysql_query($sanitized_query, $db_connection);
-            $nFields = mysql_num_fields($rs);
+            $rs = mysql_query($query, $db_connection);
 
-            print "<b>YOUR QUERY: </b>$sanitized_query<br><br>";
-            print "<b>nFields: </b>$nFields<br><br>";
+            print "<b>YOUR QUERY: </b>$query<br><br>";
             
-            print "<table border=1>";
-            
-            for ($i = 0; $i < $nFields; $i++) {
-                $fields = mysql_fetch_field($rs, $i);
-                print "<th>";
-                print $fields->name;
-                // print ", ";
-                print "</th>";
-            }
-        //        print "<br>";
+            //TODO: can these be made into !$rs, etc.?
 
-		    while($row = mysql_fetch_row($rs)) {
-                $printme = "";
-                print "<tr>";
+            if (is_resource($rs)) {
+                //valid SQL query, so return the result
+                $nFields = mysql_num_fields($rs);
+
+                print "<table border=1>";
+                
                 for ($i = 0; $i < $nFields; $i++) {
-                    print "<td>";
-                    $printme += $row[$i] + ", ";
-                    print $row[$i];
-                    print "</td>";
-                    // print ", ";
+                    $fields = mysql_fetch_field($rs, $i);
+                    print "<th>";
+                    print $fields->name;
+                    print "</th>";
                 }
 
-                //print "<br>";
-                print "</tr>";
+		        while($row = mysql_fetch_row($rs)) {
+                    $printme = "";
+                    print "<tr>";
+                    for ($i = 0; $i < $nFields; $i++) {
+                        print "<td>";
+                        $printme += $row[$i] + ", ";
+                        print $row[$i];
+                        print "</td>";
+                    }
+
+                    print "</tr>";
+                }
+                print "</table>";
+
+            } else if  ($rs) {
+                // INSERT/UPDATE/DELETE was successful
+                print "<b>Successfully added Actor/Direcor! Rejoice!</b>";
+            } else {
+                // invalid SQL query
+                print "<b>Sorry bro, bad SQL. Maybe invalid syntax, or the command violated a CHECK constraint. Bummer.</b>";
             }
-            print "</table>";
+
 		    // close the connection when done
 		    mysql_close($db_connection);
         }
