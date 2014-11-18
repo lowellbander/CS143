@@ -130,17 +130,57 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
 
 RC SqlEngine::load(const string& table, const string& loadfile, bool index)
 {
-  /* your code here */
-    
-    ifstream inputStream;
-    RecordFile rf;
+  	//Ignoring third parameter for part A
 
-    //use c_str() to avoid problems with null char in filenames
-    inputStream.open(loadfile.c_str(), std::ifstream::in);
-            
-    RC status = rf.open((table + ".tbl").c_str(), 'w');
-    if(status < 0)
-        return status;
+	//buffer to read in from loadfile
+  	string buffer;
+
+	//file descriptors
+	ifstream inputStream;
+	RecordFile rf;
+
+	//vars for table
+	int key;
+	string value;
+	RecordId rid;
+
+	//open() needs const char*
+	inputStream.open(loadfile.c_str(), std::ifstream::in);
+	if(inputStream.good())
+	{
+		RC status = rf.open(table + ".tbl", 'w');
+		if(status != 0)
+			return status;	
+
+		while(inputStream.good())
+		{
+			getline(inputStream, buffer);
+
+			status = parseLoadLine(buffer, key, value);
+			if(status != 0)
+			{
+				fprintf(stderr, "Couldn't parse line from %s\n", loadfile.c_str());
+				break;	
+			}	
+
+			status = rf.append(key,value,rid);
+			if(status != 0)
+			{
+				fprintf(stderr, "Couldn't insert key: %i\n",key );
+			}
+
+			//also add insert for index later
+		}
+
+		return status;	
+	}
+	else
+	{
+		fprintf(stderr, "Couldn't open handle for %s\n", loadfile.c_str() );
+	}
+
+	//check status here?
+	inputStream.close();
 
   return 0;
 }
