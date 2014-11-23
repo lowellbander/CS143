@@ -128,7 +128,33 @@ RC BTLeafNode::insert(int key, const RecordId& rid)
  */
 RC BTLeafNode::insertAndSplit(int key, const RecordId& rid, 
                               BTLeafNode& sibling, int& siblingKey)
-{ return 0; }
+{ 
+    if(sibling.getKeyCount() > 0)
+        return -1; //Should be empty according to spec
+
+    int keyCount = getKeyCount();
+    splitPoint = (keyCount + 1)/2;
+    
+    int eid = -1;
+    locate(key, eid);
+    
+    //move everything from splitPoint to sibling
+    for(int i = splitPoint ; i < keyCount ; i++)
+    {
+        Entry *cur = (Entry *)buffer + i;
+        sibling.insert(cur->key, cur->rid);
+
+        cur->key = 0;
+        cur->rid.sid = cur->rid.pid = 0;          
+    }
+
+    
+    //key should be inserted to orig/sibling node based on eid 
+    if(eid < splitPoint)
+        insert(key, rid);
+    else
+        sibling.insert(key, rid);
+}
 
 /*
  * Find the entry whose key value is larger than or equal to searchKey
@@ -143,6 +169,7 @@ RC BTLeafNode::locate(int searchKey, int& eid)
     Entry *current = (Entry *) buffer;
     int nKeys = getKeyCount();
     printf("searching for %i\n", searchKey);
+    
     for(eid = 0; eid < nKeys; ++eid, ++current) {
         printf("current->key: %i\n", current->key);
         if((current->key) >= searchKey) {
@@ -154,9 +181,8 @@ RC BTLeafNode::locate(int searchKey, int& eid)
     // if all keys are strictly larger than searchKey, 
     // eid shall point to the beginning of the array.
     printf("NOT FOUND\n");
+    
     return 0;
-
-    //TODO: edge cases
 }
 
 /*
