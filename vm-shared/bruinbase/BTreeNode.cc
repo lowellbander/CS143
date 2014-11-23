@@ -270,8 +270,21 @@ RC BTNonLeafNode::insertAndSplit(int key, PageId pid, BTNonLeafNode& sibling, in
  * @param pid[OUT] the pointer to the child node to follow.
  * @return 0 if successful. Return an error code if there is an error.
  */
-RC BTNonLeafNode::locateChildPtr(int searchKey, PageId& pid)
-{ return 0; }
+RC BTNonLeafNode::locateChildPtr(int searchKey, PageId& pid) { 
+
+    // TODO: edge case: where the element we're looking for is in the
+    // right most pointer
+
+    Entry *current = (Entry*) buffer;
+    int nKeys = getKeyCount();
+    for (pid = 0; pid < nKeys; ++pid, ++current) {
+        if (current->key > searchKey)
+            return 0;
+    }
+    // didn't find it, need to return last pid
+    return (current + nKeys - 1)->pid;
+
+}
 
 /*
  * Initialize the root node with (pid1, key, pid2).
