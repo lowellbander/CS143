@@ -1,8 +1,10 @@
 #include "BTreeNode.h"
 #include "string.h"
+#include "stdio.h"
 using namespace std;
 
 int main() {
+
     RC status;
 
     // make a new node
@@ -12,7 +14,8 @@ int main() {
     // get a handle for the recordfile for small.tbl
 
     RecordFile rf;
-    status = rf.open("small.tbl", 'w');
+    status = rf.open("xsmall.tbl", 'w');
+    printf("rf.open() returned %i\n", status);
 
     // insert an entry into the node using the first record in the table
 
@@ -23,9 +26,13 @@ int main() {
     rid.pid = (PageId) 0;
     rid.sid = 0;
 
-    status = rf.read(rid, key, value);
+    RecordId last = rf.endRid();
+    printf("last rid is {pid: %i, sid: %i}\n", last.pid, last.sid);
 
-    
+    status = rf.read(rid, key, value);
+    printf("rf.read() returned %i\n", status);
+    printf("key is %i\n", key);
+    printf("value is %s\n", value.c_str());
 
     // somehow test that it was inserted? maybe by calling locate with the inserted key
     // and with a key that we have not inserted.
