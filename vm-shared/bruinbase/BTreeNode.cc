@@ -45,8 +45,9 @@ RC BTLeafNode::write(PageId pid, PageFile& pf)
 int BTLeafNode::getKeyCount()
 { 
     int num = 0;
+    printf("counting\n");
     for(Entry* current = (Entry*) buffer; (current->key) != 0 && num < maxKeyCount; current++, num++) {
-        printf("current: {key: %i, rid: {pid: %i, sid: %i}}\n", (*current).key, (*current).rid.pid, (*current).rid.sid);
+        printf("element #%i: {key: %i, rid: {pid: %i, sid: %i}}\n", num, (*current).key, (*current).rid.pid, (*current).rid.sid);
         
     }
 
@@ -84,7 +85,7 @@ RC BTLeafNode::insert(int key, const RecordId& rid)
         //TODO: edge case: first insertion
         for (int i = nKeys; i > eid; --i) {
             printf("looping ");
-            Entry* current = (Entry*) buffer + nKeys - 1; // points to last entry
+            Entry* current = (Entry*) buffer + i; // points to last entry
             *current = *(current - 1);
         }
         printf("\n");
@@ -94,6 +95,7 @@ RC BTLeafNode::insert(int key, const RecordId& rid)
         (*newEntry).key = key;
         (*newEntry).rid = rid;
 
+        printf("done with insertion\n");
         printf("getKeyCount() returns %i after insertion\n", getKeyCount());
         printf("newEntry: {key: %i, rid: {pid: %i, sid: %i}}\n", (*newEntry).key, (*newEntry).rid.pid, (*newEntry).rid.sid);
 

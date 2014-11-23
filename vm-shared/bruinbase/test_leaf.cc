@@ -28,7 +28,11 @@ int main() {
     RecordId last = rf.endRid();
     printf("last rid is {pid: %i, sid: %i}\n", last.pid, last.sid);
 
-    for (int i = 0; i < 1; ++i) {
+    printf("\n--------------------------------------------------\n");
+
+    const int numInserts = 2;
+
+    for (int i = 0; i < numInserts; ++i) {
         printf("\n");
 
         rid.pid = (PageId) 0;
@@ -41,6 +45,7 @@ int main() {
         status = leaf.insert(key, rid);
         printf("leaf.insert() returned %i\n", status);
         //leaf.showBuffer();
+        printf("\n--------------------------------------------------\n");
     }
 
     // somehow test that it was inserted? maybe by calling locate with the inserted key
