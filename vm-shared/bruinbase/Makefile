@@ -12,3 +12,8 @@ SqlParser.tab.c: SqlParser.y
 
 clean:
 	rm -f bruinbase bruinbase.exe *.o *~ lex.sql.c SqlParser.tab.c SqlParser.tab.h 
+
+SRCTEST = test_leaf.cc SqlParser.tab.c lex.sql.c SqlEngine.cc BTreeIndex.cc BTreeNode.cc RecordFile.cc PageFile.cc 
+
+test:
+	g++ -ggdb -o $@ $(SRCTEST)
