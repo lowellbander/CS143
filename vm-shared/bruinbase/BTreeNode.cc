@@ -1,7 +1,12 @@
 #include "BTreeNode.h"
+#include <string.h>
 
 using namespace std;
 
+BTLeafNode::BTLeafNode():maxKeyCount(((PageFile::PAGE_SIZE) - sizeof(PageId))/sizeof(Entry))
+{
+    memset(buffer, 0, PageFile::PAGE_SIZE);
+}
 /*
  * Read the content of the node from the page pid in the PageFile pf.
  * @param pid[IN] the PageId to read
@@ -9,7 +14,9 @@ using namespace std;
  * @return 0 if successful. Return an error code if there is an error.
  */
 RC BTLeafNode::read(PageId pid, const PageFile& pf)
-{ return 0; }
+{
+    return pf.read(pid, buffer);
+}
     
 /*
  * Write the content of the node to the page pid in the PageFile pf.
@@ -18,14 +25,23 @@ RC BTLeafNode::read(PageId pid, const PageFile& pf)
  * @return 0 if successful. Return an error code if there is an error.
  */
 RC BTLeafNode::write(PageId pid, PageFile& pf)
-{ return 0; }
+{ 
+    return pf.write(pid, buffer);
+ }
 
 /*
  * Return the number of keys stored in the node.
  * @return the number of keys in the node
  */
 int BTLeafNode::getKeyCount()
-{ return 0; }
+{ 
+    int num = 0;
+    for(Entry* current = (Entry*) buffer; (current->key) != 0 && num < maxKeyCount; current++, num++)
+    {}
+
+    return num;
+}
+
 
 /*
  * Insert a (key, rid) pair to the node.
@@ -34,7 +50,37 @@ int BTLeafNode::getKeyCount()
  * @return 0 if successful. Return an error code if the node is full.
  */
 RC BTLeafNode::insert(int key, const RecordId& rid)
-{ return 0; }
+{ 
+    //check if we have enough space for new node
+    if(getKeyCount() + 1 > maxKeyCount)
+        return -1;
+
+    //we have space, let's continue
+    int eid = -1;
+
+    int status;
+    if(status = locate(key,eid)){
+        //key not found
+        return status;
+    }
+    else{
+        //shift stuff to the right
+        int nKeys = getKeyCount();
+
+        //TODO: edge case: first insertion
+        for (int i = nKeys; i > eid; --i) {
+            Entry* current = (Entry*) buffer + nKeys - 1; // points to last entry
+            *current = *(current - 1);
+        }
+
+        //insert key at new space
+        Entry* newEntry = (Entry*) buffer + eid;
+        (*newEntry).key = key;
+        (*newEntry).rid = rid;
+
+        return 0;
+    }    
+ }
 
 /*
  * Insert the (key, rid) pair to the node
@@ -59,7 +105,16 @@ RC BTLeafNode::insertAndSplit(int key, const RecordId& rid,
  * @return 0 if successful. Return an error code if there is an error.
  */
 RC BTLeafNode::locate(int searchKey, int& eid)
-{ return 0; }
+{
+    Entry *current = (Entry *) buffer;
+    for(eid = 0; eid<getKeyCount();eid++, current++)
+    {
+        if(searchKey > (current->key))
+            return 0;
+    } 
+
+    //TODO: edge cases
+}
 
 /*
  * Read the (key, rid) pair from the eid entry.
@@ -102,14 +157,16 @@ RC BTNonLeafNode::read(PageId pid, const PageFile& pf)
  * @return 0 if successful. Return an error code if there is an error.
  */
 RC BTNonLeafNode::write(PageId pid, PageFile& pf)
-{ return 0; }
+{ return         0; }
 
 /*
  * Return the number of keys stored in the node.
  * @return the number of keys in the node
  */
 int BTNonLeafNode::getKeyCount()
-{ return 0; }
+{
+    return 0;
+}
 
 
 /*
