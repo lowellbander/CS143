@@ -7,6 +7,15 @@ BTLeafNode::BTLeafNode():maxKeyCount(((PageFile::PAGE_SIZE) - sizeof(PageId))/si
 {
     memset(buffer, 0, PageFile::PAGE_SIZE);
 }
+
+void BTLeafNode::showBuffer() {
+    printf("buffer: %s\n", buffer);
+}
+
+void BTLeafNode::showEntries() {
+
+}
+
 /*
  * Read the content of the node from the page pid in the PageFile pf.
  * @param pid[IN] the PageId to read
@@ -36,8 +45,10 @@ RC BTLeafNode::write(PageId pid, PageFile& pf)
 int BTLeafNode::getKeyCount()
 { 
     int num = 0;
-    for(Entry* current = (Entry*) buffer; (current->key) != 0 && num < maxKeyCount; current++, num++)
-    {}
+    for(Entry* current = (Entry*) buffer; (current->key) != 0 && num < maxKeyCount; current++, num++) {
+        printf("current: {key: %i, rid: {pid: %i, sid: %i}}\n", (*current).key, (*current).rid.pid, (*current).rid.sid);
+        
+    }
 
     return num;
 }
@@ -51,6 +62,7 @@ int BTLeafNode::getKeyCount()
  */
 RC BTLeafNode::insert(int key, const RecordId& rid)
 { 
+    printf("beginning insert(); keycount is %i\n", getKeyCount());
     //check if we have enough space for new node
     if(getKeyCount() + 1 > maxKeyCount)
         return -1;
@@ -64,19 +76,26 @@ RC BTLeafNode::insert(int key, const RecordId& rid)
         return status;
     }
     else{
+        printf("eid: %i\n", eid);
         //shift stuff to the right
         int nKeys = getKeyCount();
+        printf("nKeys: %i\n", nKeys);
 
         //TODO: edge case: first insertion
         for (int i = nKeys; i > eid; --i) {
+            printf("looping ");
             Entry* current = (Entry*) buffer + nKeys - 1; // points to last entry
             *current = *(current - 1);
         }
+        printf("\n");
 
         //insert key at new space
         Entry* newEntry = (Entry*) buffer + eid;
         (*newEntry).key = key;
         (*newEntry).rid = rid;
+
+        printf("getKeyCount() returns %i after insertion\n", getKeyCount());
+        printf("newEntry: {key: %i, rid: {pid: %i, sid: %i}}\n", (*newEntry).key, (*newEntry).rid.pid, (*newEntry).rid.sid);
 
         return 0;
     }    
@@ -109,7 +128,8 @@ RC BTLeafNode::locate(int searchKey, int& eid)
     Entry *current = (Entry *) buffer;
     for(eid = 0; eid<getKeyCount();eid++, current++)
     {
-        if(searchKey > (current->key))
+        printf("current->key: %i\n", current->key);
+        if(searchKey >= (current->key))
             return 0;
     } 
 

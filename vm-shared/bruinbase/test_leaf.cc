@@ -4,12 +4,14 @@
 using namespace std;
 
 int main() {
+    printf("\n");
 
     RC status;
 
     // make a new node
 
     BTLeafNode leaf;
+    //leaf.showBuffer();
 
     // get a handle for the recordfile for small.tbl
 
@@ -23,19 +25,27 @@ int main() {
     string value;
 
     RecordId rid;
-    rid.pid = (PageId) 0;
-    rid.sid = 0;
-
     RecordId last = rf.endRid();
     printf("last rid is {pid: %i, sid: %i}\n", last.pid, last.sid);
 
-    status = rf.read(rid, key, value);
-    printf("rf.read() returned %i\n", status);
-    printf("key is %i\n", key);
-    printf("value is %s\n", value.c_str());
+    for (int i = 0; i < 1; ++i) {
+        printf("\n");
+
+        rid.pid = (PageId) 0;
+        rid.sid = i;
+
+        status = rf.read(rid, key, value);
+        printf("rf.read() returned %i\n", status);
+        printf("prepping insert of {%i, '%s'}\n", key, value.c_str());
+
+        status = leaf.insert(key, rid);
+        printf("leaf.insert() returned %i\n", status);
+        //leaf.showBuffer();
+    }
 
     // somehow test that it was inserted? maybe by calling locate with the inserted key
     // and with a key that we have not inserted.
 
     // we can do more complete testing when we have implemented readEntry
+    printf("\n");
 }
