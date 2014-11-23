@@ -17,7 +17,14 @@ void BTLeafNode::showEntries() {
     int nKeys = getKeyCount();
     int i = 0;
     for(Entry* current = (Entry*) buffer; i < nKeys; ++current, ++i) {
-        printf("element #%i: {key: %i, rid: {pid: %i, sid: %i}}\n", i, (*current).key, (*current).rid.pid, (*current).rid.sid);
+
+        int key = -1;
+        RecordId rid;
+
+        //TODO: check return value
+        readEntry(i, key, rid);
+
+        printf("element #%i: {key: %i, rid: {pid: %i, sid: %i}}\n", i, key, rid.pid, rid.sid);
         
     }
 
@@ -159,8 +166,19 @@ RC BTLeafNode::locate(int searchKey, int& eid)
  * @param rid[OUT] the RecordId from the entry
  * @return 0 if successful. Return an error code if there is an error.
  */
-RC BTLeafNode::readEntry(int eid, int& key, RecordId& rid)
-{ return 0; }
+RC BTLeafNode::readEntry(int eid, int& key, RecordId& rid) {
+
+    // check for leading null-byte
+    if (!*buffer)
+        return -1;
+
+    Entry* e = (Entry*) buffer + eid;
+    
+    key = e->key;
+    rid = e->rid;
+
+    return 0;
+}
 
 /*
  * Return the pid of the next slibling node.
