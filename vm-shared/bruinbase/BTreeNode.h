@@ -194,6 +194,10 @@ class BTNonLeafNode {
     * that contains the node.
     */
     char buffer[PageFile::PAGE_SIZE];
+    typedef struct{
+        PageId pid;
+        int key;
+    } Entry;
 }; 
 
 #endif /* BTNODE_H */

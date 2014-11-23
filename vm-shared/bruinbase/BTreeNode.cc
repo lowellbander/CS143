@@ -200,7 +200,7 @@ RC BTLeafNode::setNextNodePtr(PageId pid)
     PageId *ptr = (PageId*)(buffer + maxKeyCount * sizeof(Entry));
     *ptr = pid;
     //TODO: Possible failures?
-    Rc rc = 0;
+    RC rc = 0;
     return rc;
 }
 
