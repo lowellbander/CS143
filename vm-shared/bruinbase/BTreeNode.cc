@@ -128,12 +128,20 @@ RC BTLeafNode::insertAndSplit(int key, const RecordId& rid,
 RC BTLeafNode::locate(int searchKey, int& eid)
 {
     Entry *current = (Entry *) buffer;
-    for(eid = 0; eid<getKeyCount();eid++, current++)
-    {
+    int nKeys = getKeyCount();
+    printf("searching for %i\n", searchKey);
+    for(eid = 0; eid < nKeys; ++eid, ++current) {
         printf("current->key: %i\n", current->key);
-        if(searchKey >= (current->key))
+        if((current->key) >= searchKey) {
+            printf("found! current->key: %i\n", current->key);
             return 0;
+            
+        }
     } 
+    // if all keys are strictly larger than searchKey, 
+    // eid shall point to the beginning of the array.
+    printf("NOT FOUND\n");
+    return 0;
 
     //TODO: edge cases
 }

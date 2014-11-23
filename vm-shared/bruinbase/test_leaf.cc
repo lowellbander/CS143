@@ -30,7 +30,7 @@ int main() {
 
     printf("\n--------------------------------------------------\n");
 
-    const int numInserts = 2;
+    const int numInserts = 8;
 
     for (int i = 0; i < numInserts; ++i) {
         printf("\n");
