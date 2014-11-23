@@ -13,6 +13,13 @@ void BTLeafNode::showBuffer() {
 }
 
 void BTLeafNode::showEntries() {
+    printf("\nHere are the entries in this node:\n");
+    int nKeys = getKeyCount();
+    int i = 0;
+    for(Entry* current = (Entry*) buffer; i < nKeys; ++current, ++i) {
+        printf("element #%i: {key: %i, rid: {pid: %i, sid: %i}}\n", i, (*current).key, (*current).rid.pid, (*current).rid.sid);
+        
+    }
 
 }
 
@@ -45,9 +52,9 @@ RC BTLeafNode::write(PageId pid, PageFile& pf)
 int BTLeafNode::getKeyCount()
 { 
     int num = 0;
-    printf("counting\n");
+    //printf("counting\n");
     for(Entry* current = (Entry*) buffer; (current->key) != 0 && num < maxKeyCount; current++, num++) {
-        printf("element #%i: {key: %i, rid: {pid: %i, sid: %i}}\n", num, (*current).key, (*current).rid.pid, (*current).rid.sid);
+        //printf("element #%i: {key: %i, rid: {pid: %i, sid: %i}}\n", num, (*current).key, (*current).rid.pid, (*current).rid.sid);
         
     }
 

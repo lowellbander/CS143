@@ -53,4 +53,6 @@ int main() {
 
     // we can do more complete testing when we have implemented readEntry
     printf("\n");
+
+    leaf.showEntries();
 }
