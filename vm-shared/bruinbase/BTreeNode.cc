@@ -43,7 +43,7 @@ RC BTLeafNode::read(PageId pid, const PageFile& pf)
 RC BTLeafNode::write(PageId pid, PageFile& pf)
 { 
     return pf.write(pid, buffer);
- }
+}
 
 /*
  * Return the number of keys stored in the node.
@@ -60,7 +60,6 @@ int BTLeafNode::getKeyCount()
 
     return num;
 }
-
 
 /*
  * Insert a (key, rid) pair to the node.

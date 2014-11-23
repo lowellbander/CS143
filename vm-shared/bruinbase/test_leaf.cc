@@ -55,4 +55,19 @@ int main() {
     printf("\n");
 
     leaf.showEntries();
+
+    // write the contents of a node to a pagefile and read it back into another
+    // node.
+    
+    PageFile pf;
+    status = pf.open("leaf.txt", 'w');
+    printf("opened file for writing with status code %i\n", status);
+    status = leaf.write(0, pf);
+    printf("wrote to file with status %i\n", status);
+
+    BTLeafNode anotherNode;
+    status = anotherNode.read(0, pf);
+    printf("opened file for reading with status code %i\n", status);
+    anotherNode.showEntries();
+
 }
