@@ -204,6 +204,11 @@ RC BTLeafNode::setNextNodePtr(PageId pid)
     return rc;
 }
 
+BTNonLeafNode::BTNonLeafNode():maxKeyCount(((PageFile::PAGE_SIZE) - sizeof(PageId))/sizeof(Entry))
+{
+    memset(buffer, 0, PageFile::PAGE_SIZE);
+}
+
 /*
  * Read the content of the node from the page pid in the PageFile pf.
  * @param pid[IN] the PageId to read
@@ -226,9 +231,13 @@ RC BTNonLeafNode::write(PageId pid, PageFile& pf)
  * Return the number of keys stored in the node.
  * @return the number of keys in the node
  */
-int BTNonLeafNode::getKeyCount()
-{
-    return 0;
+int BTNonLeafNode::getKeyCount() {
+    int nKeys = 0;
+    for (Entry* current = (Entry*) buffer; 
+            current->key != 0 && nKeys < maxKeyCount;
+            ++current, ++nKeys) {}
+
+    return nKeys;
 }
 
 
