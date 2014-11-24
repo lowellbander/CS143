@@ -5,7 +5,8 @@ using namespace std;
 
 BTLeafNode::BTLeafNode():maxKeyCount(((PageFile::PAGE_SIZE) - sizeof(PageId))/sizeof(Entry))
 {
-    memset(buffer, 0, PageFile::PAGE_SIZE);
+    buffer = memset(buffer, 0, PageFile::PAGE_SIZE);
+    //TODO: What is memset returns null?
 }
 
 void BTLeafNode::showBuffer() {
@@ -327,4 +328,18 @@ RC BTNonLeafNode::locateChildPtr(int searchKey, PageId& pid) {
  * @return 0 if successful. Return an error code if there is an error.
  */
 RC BTNonLeafNode::initializeRoot(PageId pid1, int key, PageId pid2)
-{ return 0; }
+{ 
+    buffer = memset(buffer, 0, PageFile::PAGE_SIZE);
+    
+    if(buffer == NULL)
+        return -1;
+
+    Entry *ptr = (Entry*) buffer;
+    *ptr->pid = pid1;
+    *ptr->key = key;
+    
+    ptr++;
+    *ptr->pid = pid2;
+
+    return 0;
+}
