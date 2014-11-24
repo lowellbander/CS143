@@ -125,7 +125,9 @@ class BTLeafNode {
 class BTNonLeafNode {
   public:
     
-      BTNonLeafNode();
+    BTNonLeafNode();
+
+    void showEntries();
 
    /**
     * Insert a (key, pid) pair to the node.
