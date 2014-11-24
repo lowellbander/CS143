@@ -90,27 +90,27 @@ RC BTLeafNode::insert(int key, const RecordId& rid)
         return status;
     }
     else{
-        printf("eid: %i\n", eid);
+       // printf("eid: %i\n", eid);
         //shift stuff to the right
         int nKeys = getKeyCount();
-        printf("nKeys: %i\n", nKeys);
+       // printf("nKeys: %i\n", nKeys);
 
         //TODO: edge case: first insertion
         for (int i = nKeys; i > eid; --i) {
-            printf("looping ");
+        //    printf("looping ");
             Entry* current = (Entry*) buffer + i; // points to last entry
             *current = *(current - 1);
         }
-        printf("\n");
+      //  printf("\n");
 
         //insert key at new space
         Entry* newEntry = (Entry*) buffer + eid;
         (*newEntry).key = key;
         (*newEntry).rid = rid;
 
-        printf("done with insertion\n");
-        printf("getKeyCount() returns %i after insertion\n", getKeyCount());
-        printf("newEntry: {key: %i, rid: {pid: %i, sid: %i}}\n", (*newEntry).key, (*newEntry).rid.pid, (*newEntry).rid.sid);
+    //    printf("done with insertion\n");
+    //    printf("getKeyCount() returns %i after insertion\n", getKeyCount());
+    //    printf("newEntry: {key: %i, rid: {pid: %i, sid: %i}}\n", (*newEntry).key, (*newEntry).rid.pid, (*newEntry).rid.sid);
 
         return 0;
     }    
@@ -128,7 +128,40 @@ RC BTLeafNode::insert(int key, const RecordId& rid)
  */
 RC BTLeafNode::insertAndSplit(int key, const RecordId& rid, 
                               BTLeafNode& sibling, int& siblingKey)
-{ return 0; }
+{ 
+    if(sibling.getKeyCount() > 0)
+        return -1; //Should be empty according to spec
+
+    int keyCount = getKeyCount();
+    int splitPoint = (keyCount + 1)/2;
+    
+    int eid = -1;
+    locate(key, eid);
+    
+    if(eid == splitPoint)
+        siblingKey = key;
+     else
+        siblingKey = ((Entry*) buffer + splitPoint)->key;
+    
+    //move everything from splitPoint to sibling
+    for(int i = splitPoint ; i < keyCount ; i++)
+    {
+        Entry *cur = (Entry *)buffer + i;
+        sibling.insert(cur->key, cur->rid);
+
+        cur->key = 0;
+        cur->rid.sid = cur->rid.pid = 0;          
+    }
+
+    
+    //key should be inserted to orig/sibling node based on eid 
+    if(eid < splitPoint)
+        insert(key, rid);
+    else
+        sibling.insert(key, rid);
+
+    return 0; 
+}
 
 /*
  * Find the entry whose key value is larger than or equal to searchKey
@@ -142,9 +175,10 @@ RC BTLeafNode::locate(int searchKey, int& eid)
 {
     Entry *current = (Entry *) buffer;
     int nKeys = getKeyCount();
-    printf("searching for %i\n", searchKey);
+    //printf("searching for %i\n", searchKey);
+    
     for(eid = 0; eid < nKeys; ++eid, ++current) {
-        printf("current->key: %i\n", current->key);
+      //  printf("current->key: %i\n", current->key);
         if((current->key) >= searchKey) {
             printf("found! current->key: %i\n", current->key);
             return 0;
@@ -154,9 +188,8 @@ RC BTLeafNode::locate(int searchKey, int& eid)
     // if all keys are strictly larger than searchKey, 
     // eid shall point to the beginning of the array.
     printf("NOT FOUND\n");
+    
     return 0;
-
-    //TODO: edge cases
 }
 
 /*

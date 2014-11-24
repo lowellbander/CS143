@@ -133,8 +133,46 @@ int test_sibling() {
     newRight.showEntries();
 }
 
+int test_split(){
+    BTLeafNode left;
+    BTLeafNode right;
+    PageId left_pid = 0;
+    PageId right_pid = 5;
+
+    //load all of a .del into one
+    RecordFile rf;
+    rf.open("xsmall.tbl",'w');
+
+    RecordId rid;
+    rid.pid = 0;
+    
+    int key;
+    string value;
+
+    for(int i = 0; i<8; ++i){
+        rid.sid = i;
+        rf.read(rid, key, value);
+        left.insert(key,rid);
+    }
+
+    PageFile pf;
+    pf.open("split_test.txt", 'w');
+    left.write(left_pid, pf);
+    left.showEntries();
+
+    RecordId rid2;
+    rid2.pid = 0;
+    rid2.sid = 8;
+    int sibKey = -5;
+    left.insertAndSplit(9999,rid2, right,sibKey);
+
+    printf("sib key after split is %d\n", sibKey);
+
+
+}
+
 int main() {
     //test_leaf_insert_RW();
-    test_sibling();
-
+    //test_sibling();
+    test_split();
 }
