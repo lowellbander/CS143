@@ -204,6 +204,15 @@ RC BTLeafNode::setNextNodePtr(PageId pid)
     return rc;
 }
 
+void BTNonLeafNode::showEntries() {
+    printf("\nHere are the (key,pid) pairs:\n");
+    int nKeys = getKeyCount();
+    int i = 0;
+    for (Entry* e = (Entry*) buffer; i < nKeys; ++e, ++i) {
+        printf("entry #%i: {key: %i, pid: %i}\n", i, e->key, e->pid);
+    }
+}
+
 BTNonLeafNode::BTNonLeafNode():maxKeyCount(((PageFile::PAGE_SIZE) - sizeof(PageId))/sizeof(Entry))
 {
     memset(buffer, 0, PageFile::PAGE_SIZE);
@@ -247,8 +256,41 @@ int BTNonLeafNode::getKeyCount() {
  * @param pid[IN] the PageId to insert
  * @return 0 if successful. Return an error code if the node is full.
  */
-RC BTNonLeafNode::insert(int key, PageId pid)
-{ return 0; }
+RC BTNonLeafNode::insert(int key, PageId pid) { 
+    Entry *entries = (Entry*) buffer;
+    int nKeys = getKeyCount();
+
+    // check to see if the node is full
+    if (nKeys + 1 > maxKeyCount)
+        return -1;
+
+    //find the index where the (key, pid) Entry should be inserted
+    
+    int index;
+    for (index = 0; index < nKeys; ++index) {
+        if (entries[index].key >= key)
+            break;
+    }
+
+    // shift over the entries to the right of this 
+    
+    for (int i = nKeys; i > index; --i) {
+        printf("shifting ");
+        Entry* e = (Entry*) buffer + i;
+        *e = *(e - 1);
+    }
+    printf("\n");
+
+    // insert the entry
+    
+    Entry* newEntry = (Entry*) buffer + index;
+    (*newEntry).key = key;
+    (*newEntry).pid = pid;
+
+    return 0;
+
+    //TODO: make sure the last pid is always up-to-date
+}
 
 /*
  * Insert the (key, pid) pair to the node
@@ -282,7 +324,10 @@ RC BTNonLeafNode::locateChildPtr(int searchKey, PageId& pid) {
             return 0;
     }
     // didn't find it, need to return last pid
-    return (current + nKeys - 1)->pid;
+    pid = (current + nKeys - 1)->pid;
+    return 0;
+
+    //TODO: errors
 
 }
 
