@@ -6,7 +6,6 @@ using namespace std;
 BTLeafNode::BTLeafNode():maxKeyCount(((PageFile::PAGE_SIZE) - sizeof(PageId))/sizeof(Entry))
 {
     memset(buffer, 0, PageFile::PAGE_SIZE);
-    //TODO: What is memset returns null?
 }
 
 void BTLeafNode::showBuffer() {
@@ -316,9 +315,9 @@ RC BTNonLeafNode::insert(int key, PageId pid) {
     printf("\n");
 
     // insert the entry
-    
+        
     Entry* newEntry = (Entry*) buffer + index;
-    (*newEntry).key = key;
+    (*(newEntry+1)).key = key;
     (*newEntry).pid = pid;
 
     return 0;
