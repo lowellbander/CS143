@@ -243,7 +243,7 @@ void BTNonLeafNode::showEntries() {
     int nKeys = getKeyCount();
     int i = 0;
     for (Entry* e = (Entry*) buffer; i < nKeys + 1; ++e, ++i) {
-        printf("entry #%i: {pid: %i, key: %i}\n", i, e->key, e->pid);
+        printf("entry #%i: {pid: %i, key: %i}\n", i, e->pid, e->key);
     }
 }
 
