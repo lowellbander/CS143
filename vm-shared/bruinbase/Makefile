@@ -11,9 +11,14 @@ SqlParser.tab.c: SqlParser.y
 	bison -d -psql $<
 
 clean:
-	rm -f bruinbase bruinbase.exe *.o *~ lex.sql.c SqlParser.tab.c SqlParser.tab.h test
+	rm -f bruinbase bruinbase.exe *.o *~ lex.sql.c SqlParser.tab.c SqlParser.tab.h test_leaf test_nonleaf
 
-SRCTEST = test_leaf.cc SqlParser.tab.c lex.sql.c SqlEngine.cc BTreeIndex.cc BTreeNode.cc RecordFile.cc PageFile.cc 
+LEAF = test_leaf.cc SqlParser.tab.c lex.sql.c SqlEngine.cc BTreeIndex.cc BTreeNode.cc RecordFile.cc PageFile.cc 
 
-test:
-	g++ -ggdb -o $@ $(SRCTEST)
+test_leaf:
+	g++ -ggdb -o $@ $(LEAF)
+
+NONLEAF = test_nonleaf.cc SqlParser.tab.c lex.sql.c SqlEngine.cc BTreeIndex.cc BTreeNode.cc RecordFile.cc PageFile.cc 
+
+test_nonleaf:
+	g++ -ggdb -o $@ $(NONLEAF)
