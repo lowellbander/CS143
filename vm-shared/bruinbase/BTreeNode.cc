@@ -316,9 +316,12 @@ RC BTNonLeafNode::insert(int key, PageId pid) {
 
     // insert the entry
         
-    Entry* newEntry = (Entry*) buffer + index;
-    (*(newEntry+1)).key = key;
-    (*newEntry).pid = pid;
+    entries[index].key = key;
+    entries[index + 1].pid = pid;
+
+    //Entry* newEntry = (Entry*) buffer + index;
+    //(*(newEntry+1)).key = key;
+    //(*newEntry).pid = pid;
 
     return 0;
 

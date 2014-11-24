@@ -33,7 +33,7 @@ int test_root(){
 }
 int main() {
     printf("\n\n");
-    //test_insert();
-    test_root();
+    test_insert();
+    //test_root();
     printf("\n\n");
 }
