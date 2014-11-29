@@ -15,8 +15,7 @@ using namespace std;
 /*
  * BTreeIndex constructor
  */
-BTreeIndex::BTreeIndex()
-{
+BTreeIndex::BTreeIndex() {
     rootPid = -1;
 }
 
@@ -27,8 +26,7 @@ BTreeIndex::BTreeIndex()
  * @param mode[IN] 'r' for read, 'w' for write
  * @return error code. 0 if no error
  */
-RC BTreeIndex::open(const string& indexname, char mode)
-{
+RC BTreeIndex::open(const string& indexname, char mode) {
     return 0;
 }
 
@@ -36,8 +34,7 @@ RC BTreeIndex::open(const string& indexname, char mode)
  * Close the index file.
  * @return error code. 0 if no error
  */
-RC BTreeIndex::close()
-{
+RC BTreeIndex::close() {
     return 0;
 }
 
@@ -47,8 +44,7 @@ RC BTreeIndex::close()
  * @param rid[IN] the RecordId for the record being inserted into the index
  * @return error code. 0 if no error
  */
-RC BTreeIndex::insert(int key, const RecordId& rid)
-{
+RC BTreeIndex::insert(int key, const RecordId& rid) {
     return 0;
 }
 
@@ -71,8 +67,7 @@ RC BTreeIndex::insert(int key, const RecordId& rid)
  *                    with the key value.
  * @return error code. 0 if no error.
  */
-RC BTreeIndex::locate(int searchKey, IndexCursor& cursor)
-{
+RC BTreeIndex::locate(int searchKey, IndexCursor& cursor) {
     return 0;
 }
 
@@ -84,7 +79,6 @@ RC BTreeIndex::locate(int searchKey, IndexCursor& cursor)
  * @param rid[OUT] the RecordId stored at the index cursor location.
  * @return error code. 0 if no error
  */
-RC BTreeIndex::readForward(IndexCursor& cursor, int& key, RecordId& rid)
-{
+RC BTreeIndex::readForward(IndexCursor& cursor, int& key, RecordId& rid) {
     return 0;
 }
