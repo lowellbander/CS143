@@ -22,7 +22,6 @@ class BTLeafNode {
     // constructor
     BTLeafNode();
 
-    void showBuffer();
     void showEntries();
 
    /**
