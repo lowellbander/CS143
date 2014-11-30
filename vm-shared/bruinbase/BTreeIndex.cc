@@ -27,7 +27,7 @@ BTreeIndex::BTreeIndex() {
  * @return error code. 0 if no error
  */
 RC BTreeIndex::open(const string& indexname, char mode) {
-    return 0;
+    return pf.open(indexname, mode);
 }
 
 /*
@@ -35,6 +35,7 @@ RC BTreeIndex::open(const string& indexname, char mode) {
  * @return error code. 0 if no error
  */
 RC BTreeIndex::close() {
+    pf.close();
     return 0;
 }
 
@@ -80,5 +81,23 @@ RC BTreeIndex::locate(int searchKey, IndexCursor& cursor) {
  * @return error code. 0 if no error
  */
 RC BTreeIndex::readForward(IndexCursor& cursor, int& key, RecordId& rid) {
+    //cursor = {PageId pid, int eid}
+
+    //read in the leaf node
+
+    BTLeafNode leaf;
+    leaf.read(cursor.pid, pf);
+
+    //read the (key, rid) pair into key, rid
+    RC status = leaf.readEntry(cursor.eid, key, rid);
+    if (status != 0) {
+        return -1;
+    }
+    //printf("readForward(): key: %i, rid: {pid: %i, sid: %i} \n", key, rid.pid, rid.sid);
+
+    // move the cursor forward to the next entry
+    ++cursor.eid;
+
     return 0;
 }
+
