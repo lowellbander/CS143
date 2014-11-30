@@ -7,10 +7,6 @@ BTLeafNode::BTLeafNode():maxKeyCount(((PageFile::PAGE_SIZE) - sizeof(PageId))/si
     memset(buffer, 0, PageFile::PAGE_SIZE);
 }
 
-void BTLeafNode::showBuffer() {
-    printf("buffer: %s\n", buffer);
-}
-
 void BTLeafNode::showEntries() {
     printf("\nHere are the entries in this node:\n");
     int nKeys = getKeyCount();
@@ -69,7 +65,7 @@ int BTLeafNode::getKeyCount() {
  * @return 0 if successful. Return an error code if the node is full.
  */
 RC BTLeafNode::insert(int key, const RecordId& rid) { 
-    printf("beginning insert(); keycount is %i\n", getKeyCount());
+    //printf("beginning insert(); keycount is %i\n", getKeyCount());
     //check if we have enough space for new node
     if(getKeyCount() + 1 > maxKeyCount)
         return -1;
@@ -167,14 +163,13 @@ RC BTLeafNode::locate(int searchKey, int& eid) {
     for(eid = 0; eid < nKeys; ++eid, ++current) {
       //  printf("current->key: %i\n", current->key);
         if((current->key) >= searchKey) {
-            printf("found! current->key: %i\n", current->key);
+            //printf("found! current->key: %i\n", current->key);
             return 0;
             
         }
     } 
     // if all keys are strictly larger than searchKey, 
     // eid shall point to the beginning of the array.
-    printf("NOT FOUND\n");
     
     return 0;
 }
