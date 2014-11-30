@@ -44,7 +44,7 @@ int test_insertAndSplit(){
 
     int midkey = -1;
     PageId pid = 11;
-    left.insertAndSplit(65, pid, right, midkey);
+    left.insertAndSplit(15, pid, right, midkey);
 
     printf("\nAFTER SPLIT\n");
     left.showEntries();

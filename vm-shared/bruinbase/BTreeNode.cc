@@ -336,41 +336,28 @@ RC BTNonLeafNode::insertPidAtEnd(PageId pid){
 RC BTNonLeafNode::insertAndSplit(int key, PageId pid, BTNonLeafNode& sibling, int& midKey)
 { 
     if(sibling.getKeyCount() > 0)
-        return -1;
+        return -1; //TODO: Use RC error code
     
     int keyCount = getKeyCount();
+    //insert
+    insert(key, pid);
+
     // left heavy split
     int splitPoint = (keyCount+1)/2;
-    
-    PageId test_pid = -1;
-    locateChildPtr(key, test_pid);
-    if(test_pid == -1){
-        printf("Fatal error in locateChildPtr via insertAndSplit");
-        return -1;
-    }
-    
-    int i=splitPoint; 
-    //value of midkey
-    if(test_pid == splitPoint)
-        midKey = key;
-    else{
-        midKey = ((Entry*) buffer + splitPoint)->key; 
-        i++;
-        
-        if(test_pid < splitPoint)
-            insert(key, pid);
-        else
-            sibling.insert(key, pid);
+    midKey = ((Entry*) buffer + splitPoint)->key; 
 
-    }
+    Entry *e = (Entry*) buffer + splitPoint;
+    sibling.initializeRoot((e+1)->pid, (e+1)->key, (e+2)->pid);
+    (e+1)->pid = (e+1)->key = (e+2)->pid = 0;
+
     //move entries to sibling  
-    for(; i<keyCount; i++)
+    for(int i=splitPoint+2; i<keyCount; i++)
     {
         Entry* cur = (Entry *) buffer + i;
-        sibling.insert(cur->key, cur->pid);
+        sibling.insert(cur->key, (cur+1)->pid);
 
         cur->key = 0;
-        cur->pid = 0;
+        (cur+1)->pid = 0;
     }
     
     //TODO:insert key into leaf?
