@@ -159,7 +159,7 @@ RC BTLeafNode::locate(int searchKey, int& eid) {
     Entry *current = (Entry *) buffer;
     int nKeys = getKeyCount();
     //printf("searching for %i\n", searchKey);
-    
+    ;
     for(eid = 0; eid < nKeys; ++eid, ++current) {
       //  printf("current->key: %i\n", current->key);
         if((current->key) >= searchKey) {
@@ -184,8 +184,11 @@ RC BTLeafNode::locate(int searchKey, int& eid) {
 RC BTLeafNode::readEntry(int eid, int& key, RecordId& rid) {
 
     // check for leading null-byte
-    if (!*buffer)
+    if (!*buffer) 
+    {
+        printf("leading null-byte: %i\n", *buffer);
         return -1;
+    }
 
     Entry* e = (Entry*) buffer + eid;
     
