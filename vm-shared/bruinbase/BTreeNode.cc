@@ -133,6 +133,7 @@ RC BTLeafNode::insertAndSplit(int key, const RecordId& rid,
         return -1; //Should be empty according to spec
 
     int keyCount = getKeyCount();
+    //left heavy split
     int splitPoint = (keyCount + 1)/2;
     
     int eid = -1;
@@ -325,6 +326,19 @@ RC BTNonLeafNode::insert(int key, PageId pid) {
     //TODO: make sure the last pid is always up-to-date
 }
 
+/* 
+* Insert pid to the end of node. Replaces existing pid if already there. 
+* @param pid[IN] the PageId to insert
+* @return 0 if successful. Return an error code if the node is full.
+*/
+RC BTNonLeafNode::insertPidAtEnd(PageId pid){
+
+    //TODO: Test
+    Entry* e = (Entry*) buffer + getKeyCount();
+    e->pid = pid;
+    return 0;
+}
+
 /*
  * Insert the (key, pid) pair to the node
  * and split the node half and half with sibling.
@@ -336,7 +350,43 @@ RC BTNonLeafNode::insert(int key, PageId pid) {
  * @return 0 if successful. Return an error code if there is an error.
  */
 RC BTNonLeafNode::insertAndSplit(int key, PageId pid, BTNonLeafNode& sibling, int& midKey)
-{ return 0; }
+{ 
+    if(sibling.getKeyCount() > 0)
+        return -1;
+    
+    int keyCount = getKeyCount();
+    // left heavy split
+    int splitPoint = (keyCount+1)/2;
+    
+    int pid = -1;
+    locateChildPtr(key, pid);
+    if(pid == -1){
+        printf("Fatal error in locateChildPtr via insertAndSplit");
+        return -1;
+    }
+   
+    //value of midkey
+    if(pid == splitPoint)
+        midKey = key;
+    else
+        midKey = ((Entry*) buffer + splitPoint)->key; 
+
+    //move entries to sibling  
+    for(int i=splitPoint; i<keyCount; i++)
+    {
+        Entry* cur = (Entry *) buffer + i;
+        sibling.insert(cur->key, cur->pid);
+
+        cur->key = 0;
+        cur->pid = 0;
+    }
+    
+    Entry *e = ((Entry *)buffer + getKeyCount());
+    sibling->insertPidAtEnd(e->pid);
+
+    //TODO:insert key into leaf?
+    return 0;
+}
 
 /*
  * Given the searchKey, find the child-node pointer to follow and
