@@ -252,8 +252,8 @@ void BTNonLeafNode::showEntries() {
     printf("\nHere are the (key,pid) pairs:\n");
     int nKeys = getKeyCount();
     int i = 0;
-    for (Entry* e = (Entry*) buffer; i < nKeys + 1; ++e, ++i) {
-        printf("entry #%i: {pid: %i, key: %i}\n", i, e->pid, e->key);
+    for (Entry* e = (Entry*)(buffer+ENTRY_OFFSET); i < nKeys + 1; ++e, ++i) {
+        printf("entry #%i: {key: %i, pid: %i}\n", i, e->key, e->pid);
     }
 }
 
@@ -316,7 +316,7 @@ int BTNonLeafNode::getKeyCount() {
  * @return 0 if successful. Return an error code if the node is full.
  */
 RC BTNonLeafNode::insert(int key, PageId pid) { 
-    Entry *entries = (Entry*) (buffer);
+    Entry *entries = (Entry*) (buffer+ENTRY_OFFSET);
     int nKeys = getKeyCount();
 
     // check to see if the node is full
@@ -335,7 +335,7 @@ RC BTNonLeafNode::insert(int key, PageId pid) {
     
     for (int i = nKeys; i > index; --i) {
         printf("shifting ");
-        Entry* e = (Entry*) buffer + i;
+        Entry* e = (Entry*)(buffer+ENTRY_OFFSET) + i;
         *e = *(e - 1);
     }
     printf("\n");
@@ -343,7 +343,7 @@ RC BTNonLeafNode::insert(int key, PageId pid) {
     // insert the entry
         
     entries[index].key = key;
-    entries[index + 1].pid = pid;
+    entries[index].pid = pid;
 
     //Entry* newEntry = (Entry*) buffer + index;
     //(*(newEntry+1)).key = key;

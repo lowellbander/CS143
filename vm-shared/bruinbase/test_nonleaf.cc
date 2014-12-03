@@ -16,10 +16,13 @@ int test_insert() {
     //printf("insert() returned %i\n", status);
 
     for (; key < 10; ++key, ++pid) {
-        node.insert(key, pid);
+        node.insert(key*10, pid);
     }
 
     node.showEntries();
+    node.insert(95, 11);
+    node.showEntries();
+
 }
 
 int test_root(){
@@ -52,8 +55,8 @@ int test_insertAndSplit(){
 }
 int main() {
     printf("\n\n");
-    //test_insert();
+    test_insert();
     //test_root();
-    test_insertAndSplit();
+   // test_insertAndSplit();
     printf("\n\n");
 }
