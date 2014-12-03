@@ -114,7 +114,9 @@ class BTLeafNode {
     } Entry;
 
     int maxKeyCount;
-    
+    int keyCount;
+
+    void showBuffer();
 }; 
 
 
@@ -194,8 +196,7 @@ class BTNonLeafNode {
 
   private:
    
-    RC insertPidAtEnd(PageId pid);
-
+    RC insertWithoutSizeCheck(int key, PageId pid);
     /**
     * The main memory buffer for loading the content of the disk page 
     * that contains the node.
@@ -207,6 +208,7 @@ class BTNonLeafNode {
         int key;
     } Entry;
     int maxKeyCount;
+    int keyCount;
 }; 
 
 #endif /* BTNODE_H */

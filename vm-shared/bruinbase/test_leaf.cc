@@ -44,7 +44,7 @@ int test_leaf_insert_RW() {
 
         status = leaf.insert(key, rid);
         printf("leaf.insert() returned %i\n", status);
-        //leaf.showBuffer();
+       // leaf.showEntries();
         printf("\n--------------------------------------------------\n");
     }
 
@@ -166,13 +166,14 @@ int test_split(){
     int sibKey = -5;
     left.insertAndSplit(9999,rid2, right,sibKey);
 
+    left.showEntries();
     printf("sib key after split is %d\n", sibKey);
-
+    right.showEntries();
 
 }
 
 int main() {
-    //test_leaf_insert_RW();
-    //test_sibling();
+   //test_leaf_insert_RW();
+   //test_sibling();
     test_split();
 }
