@@ -129,6 +129,7 @@ class BTNonLeafNode {
     BTNonLeafNode();
 
     void showEntries();
+    void showEntriesWithFirstPageId();
 
    /**
     * Insert a (key, pid) pair to the node.

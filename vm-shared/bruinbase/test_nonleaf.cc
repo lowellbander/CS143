@@ -28,11 +28,11 @@ int test_insert() {
 int test_root(){
     BTNonLeafNode root;
     
-    PageId pid1 = 0;
+    PageId pid1 = 5;
     PageId pid2 = 1;
     int key = 300;
     root.initializeRoot(pid1, key, pid2);
-    root.showEntries();
+    root.showEntriesWithFirstPageId();
 }
 
 int test_insertAndSplit(){
@@ -55,8 +55,8 @@ int test_insertAndSplit(){
 }
 int main() {
     printf("\n\n");
-    test_insert();
+    //test_insert();
     //test_root();
-   // test_insertAndSplit();
+   test_insertAndSplit();
     printf("\n\n");
 }
