@@ -270,8 +270,6 @@ BTNonLeafNode::BTNonLeafNode():maxKeyCount(((PageFile::PAGE_SIZE) - sizeof(PageI
  * @return 0 if successful. Return an error code if there is an error.
  */
 RC BTNonLeafNode::read(PageId pid, const PageFile& pf){
-    if(pid < 0)
-        return RC_INVALID_PID;
     
     RC rc =  pf.read(pid, buffer);
     if(rc != 0) return rc;
@@ -287,8 +285,6 @@ RC BTNonLeafNode::read(PageId pid, const PageFile& pf){
  * @return 0 if successful. Return an error code if there is an error.
  */
 RC BTNonLeafNode::write(PageId pid, PageFile& pf){
-    if(pid < 0)
-        return RC_INVALID_PID;
     memcpy(buffer, &keyCount, sizeof(int));
     RC rc = pf.write(pid, buffer); 
     
