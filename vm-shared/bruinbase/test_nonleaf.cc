@@ -19,9 +19,18 @@ int test_insert() {
         node.insert(key*10, pid);
     }
 
-    node.showEntries();
     node.insert(95, 11);
-    node.showEntries();
+    node.showEntriesWithFirstPageId();
+
+    PageFile pf;
+    status = pf.open("nonleaf.txt",'w');
+    printf("pf.open returned %i\n", status);
+    status = node.write(0,pf);
+    printf("write returned: %i\n", status);
+
+    BTNonLeafNode newNode;
+    status = newNode.read(0,pf);
+    newNode.showEntriesWithFirstPageId();
 
 }
 
@@ -56,8 +65,8 @@ int test_insertAndSplit(){
 int main() {
     printf("\n\n");
     //TODO: key is 0 tests
-    //test_insert();
+    test_insert();
     //test_root();
-     test_insertAndSplit();
+   //  test_insertAndSplit();
     printf("\n\n");
 }
