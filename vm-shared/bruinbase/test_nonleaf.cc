@@ -42,21 +42,22 @@ int test_insertAndSplit(){
         
     left.initializeRoot(1,10,2);
     left.insert(20, 3);
-    left.showEntries();
-    right.showEntries();
+    left.showEntriesWithFirstPageId();
+    right.showEntriesWithFirstPageId();
 
     int midkey = -1;
     PageId pid = 11;
-    left.insertAndSplit(15, pid, right, midkey);
+    left.insertAndSplit(25, pid, right, midkey);
 
     printf("\nAFTER SPLIT\n");
-    left.showEntries();
-    right.showEntries(); 
+    left.showEntriesWithFirstPageId();
+    right.showEntriesWithFirstPageId(); 
 }
 int main() {
     printf("\n\n");
+    //TODO: key is 0 tests
     //test_insert();
     //test_root();
-   test_insertAndSplit();
+     test_insertAndSplit();
     printf("\n\n");
 }

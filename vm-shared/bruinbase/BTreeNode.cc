@@ -259,7 +259,7 @@ void BTNonLeafNode::showEntries() {
 
 void BTNonLeafNode::showEntriesWithFirstPageId(){
     PageId* ptr = (PageId *)buffer;
-    printf("\n First pid: %i\n",*ptr);
+    printf("\nFirst pid: %i",*ptr);
     showEntries();
 }
 /*
@@ -372,6 +372,25 @@ RC BTNonLeafNode::insertWithoutSizeCheck(int key, PageId pid) {
  */
 RC BTNonLeafNode::insertAndSplit(int key, PageId pid, BTNonLeafNode& sibling, int& midKey){ 
 
+    int nkeys = getKeyCount();
+    //safe because we set maxKeyCount by reserving one spot for split
+    insertWithoutSizeCheck(key, pid);
+    
+    
+    Entry* entries = (Entry *)(buffer + ENTRY_OFFSET);
+    int splitPoint = (nkeys+1)/2;
+    midKey = (entries+splitPoint)->key;
+    printf("Midkey: %i\n", midKey);    
+    sibling.initializeRoot((entries+splitPoint)->pid, (entries+splitPoint+1)->key, (entries+1+splitPoint)->pid);
+    //delete the midkey
+    (entries+splitPoint)->key = (entries+splitPoint)->pid = 0;
+    for(int i=splitPoint+1; i<nkeys; i++){
+        Entry* cur = (Entry*)(buffer+ENTRY_OFFSET) + i;
+        sibling.insert(cur->key, cur->pid);
+        
+        cur->key = cur->pid = 0;
+      }
+   
     return 0; 
 }
 
