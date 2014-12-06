@@ -35,6 +35,11 @@ class BTreeIndex {
  public:
   BTreeIndex();
 
+   /* A function used only when testing to set the height of the B+ tree;
+    * @return the new height of the tree
+    * */
+    int setTreeHeight(int height);
+
   /**
    * Open the index file in read or write mode.
    * Under 'w' mode, the index file should be created if it does not exist.
