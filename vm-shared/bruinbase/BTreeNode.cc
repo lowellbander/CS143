@@ -185,7 +185,7 @@ RC BTLeafNode::locate(int searchKey, int& eid)
     } 
     // if all keys are strictly larger than searchKey, 
     // eid shall point to the beginning of the array.
-    printf("NOT FOUND\n");
+    //printf("NOT FOUND\n");
     
     return 0;
 }
