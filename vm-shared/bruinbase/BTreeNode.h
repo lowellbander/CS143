@@ -13,6 +13,8 @@
 #include "RecordFile.h"
 #include "PageFile.h"
 
+#define NULL_PID -1
+
 /**
  * BTLeafNode: The class representing a B+tree leaf node.
  */

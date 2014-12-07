@@ -80,6 +80,14 @@ int test_locate(){
 
 }
 
+int test_insert() {
+    // TODO: create a new index
+    
+    // TODO: insert a single value, test locate and readForward on it
+    
+    // TODO: insert several values, test locate and readForward on them
+}
+
 int main() {
     test_locate();
 }

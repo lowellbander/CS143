@@ -17,6 +17,7 @@ using namespace std;
  */
 BTreeIndex::BTreeIndex() {
     rootPid = -1;
+    treeHeight = 0;
 }
 
 /* 
@@ -53,6 +54,37 @@ RC BTreeIndex::close() {
  * @return error code. 0 if no error
  */
 RC BTreeIndex::insert(int key, const RecordId& rid) {
+
+    // TODO: error codes
+    // TODO: error if the page is full and cannot hold any more nodes
+
+    //TODO: if the index is empty, create a new root and point it to this first
+    //key in the B+ tree
+
+    if (rootPid == NULL_PID) {
+        // create the first leaf node
+        BTLeafNode leaf;
+        leaf.insert(key, rid);
+        PageId leafPid = pf.endPid();
+        leaf.write(leafPid, pf);
+
+        // create the root node, point it to leaf 
+        BTNonLeafNode root;
+        root.initializeRoot(NULL_PID, key, leafPid);
+        rootPid = pf.endPid(); // also sets index::rootPid
+        root.write(rootPid, pf);
+
+        treeHeight = 2; // 1 for root + 1 for leaf
+        
+        return 0;
+    }
+    else {
+        // the tree is not empty
+
+        // TODO: find the leaf that we'd like to insert our key into
+        
+    }
+
     return 0;
 }
 

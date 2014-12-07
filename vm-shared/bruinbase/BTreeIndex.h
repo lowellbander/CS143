@@ -14,6 +14,8 @@
 #include "PageFile.h"
 #include "RecordFile.h"
              
+//#define ROOT_PID 0
+
 /**
  * The data structure to point to a particular entry at a b+tree leaf node.
  * An IndexCursor consists of pid (PageId of the leaf node) and 
