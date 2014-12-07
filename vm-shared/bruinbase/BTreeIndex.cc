@@ -10,6 +10,8 @@
 #include "BTreeIndex.h"
 #include "BTreeNode.h"
 
+#define NO_DEPTH 0
+
 using namespace std;
 
 /*
@@ -54,6 +56,7 @@ RC BTreeIndex::close() {
  * @return error code. 0 if no error
  */
 RC BTreeIndex::insert(int key, const RecordId& rid) {
+    RC status;
 
     // TODO: error codes
     // TODO: error if the page is full and cannot hold any more nodes
@@ -81,7 +84,29 @@ RC BTreeIndex::insert(int key, const RecordId& rid) {
     else {
         // the tree is not empty
 
-        // TODO: find the leaf that we'd like to insert our key into
+        // find the leaf that we'd like to insert our key into
+        IndexCursor cursor;
+        status = locate(key, cursor, NO_DEPTH);
+        // cursor.pid is now the pid of the leaf node that we'd like to insert into
+        
+        BTLeafNode leaf;
+        PageId leafPid = cursor.pid;
+        leaf.read(leafPid, pf);
+
+        // if there's room, we can insert here
+        if (leaf.getKeyCount() < leaf.getMaxKeyCount()) {
+            return leaf.insert(key, rid);
+        }
+        else {
+            {
+                printf("this part of index::insert() not yet implemented\n");
+                return -1;
+            }
+            // TODO: 
+            // there isn't room in this leaf, so we need to insert and split,
+            // then recursively insert the sibKey into the parent until we can
+            // insert into a parent nonleaf node without splitting.
+        }
         
     }
 

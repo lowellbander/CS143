@@ -25,6 +25,7 @@ class BTLeafNode {
     BTLeafNode();
 
     void showEntries();
+    int getMaxKeyCount();
 
    /**
     * Insert the (key, rid) pair to the node.

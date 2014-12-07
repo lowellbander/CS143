@@ -28,6 +28,10 @@ void BTLeafNode::showEntries() {
 
 }
 
+int BTLeafNode::getMaxKeyCount() {
+    return maxKeyCount;
+}
+
 /*
  * Read the content of the node from the page pid in the PageFile pf.
  * @param pid[IN] the PageId to read
