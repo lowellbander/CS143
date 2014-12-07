@@ -83,7 +83,7 @@ class BTreeIndex {
    * with the key value
    * @return error code. 0 if no error.
    */
-  RC locate(int searchKey, IndexCursor& cursor);
+  RC locate(int searchKey, IndexCursor& cursor, int depth);
 
   /**
    * Read the (key, rid) pair at the location specified by the index cursor,

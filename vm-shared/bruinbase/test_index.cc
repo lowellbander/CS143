@@ -8,16 +8,17 @@ using namespace std;
 int test_locate(){
     printf("\n TEST_LOCATE() \n");
 
-    // create several nodes which will compose the test index
+    // manually create several nodes which will compose the test index
 
     RC status ;
     PageFile pf;
-    string index_filename = "textindex.txt";
+    string index_filename = "testindex.txt";
+    int rootPid = 0;
     status = pf.open(index_filename,'w');
     
     BTNonLeafNode root;
     root.initializeRoot(1, 50, 2);
-    status = root.write(0,pf);
+    status = root.write(rootPid,pf);
 
     BTNonLeafNode leftChild;
     leftChild.initializeRoot(3,25,4);
@@ -62,7 +63,18 @@ int test_locate(){
     int newHeight = index.setTreeHeight(height);
     printf("the height of the tree is %i\n", newHeight);
 
+    IndexCursor cursor;
+    cursor.pid = rootPid;
+
     // TODO: test locate() on an existing key
+    cursor.eid = 0;
+    printf("the key 45 is located at {pid: 4, eid: 1}\n");
+
+    if ((status = index.locate(45, cursor, rootPid)) == 0)
+        printf("found key 45 at {pid: %i, eid: %i}\n", cursor.pid, cursor.eid);
+    else
+        printf("locate() failed with error code %i\n", status);
+
     // TODO: test locate() on a key which does not exist
     
 

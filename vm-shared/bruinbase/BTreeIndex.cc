@@ -43,8 +43,7 @@ RC BTreeIndex::open(const string& indexname, char mode) {
  * @return error code. 0 if no error
  */
 RC BTreeIndex::close() {
-    pf.close();
-    return 0;
+    return pf.close();
 }
 
 /*
@@ -76,8 +75,56 @@ RC BTreeIndex::insert(int key, const RecordId& rid) {
  *                    with the key value.
  * @return error code. 0 if no error.
  */
-RC BTreeIndex::locate(int searchKey, IndexCursor& cursor) {
-    return 0;
+RC BTreeIndex::locate(int searchKey, IndexCursor& cursor, int depth) {
+    RC status;
+
+    if (depth == treeHeight) {
+        // we are at a leaf node
+
+        // read in the node
+        BTLeafNode leaf;
+        leaf.read(cursor.pid, pf);
+
+        printf("reading leaf with pid %i\n", cursor.pid);
+
+        // either:
+        // keep looking,
+        // or return immediately, you found the key
+        // or return immediately, the key does not exist in this tree
+
+        RecordId rid;
+        int key;
+
+        status = leaf.readEntry(cursor.eid, key, rid);
+        if (status != 0) {
+            printf("readEntry() returned %i\n", status);
+            return -1;
+        }
+    
+        if (key >= searchKey) 
+            return 0; // found what we're looking for
+        else if (++cursor.eid == leaf.getKeyCount())
+            return RC_NO_SUCH_RECORD;
+        else
+            return locate(searchKey, cursor, depth);
+    }
+    else {
+        // we are a nonleaf
+        
+        // read in the node
+        
+        BTNonLeafNode nonleaf;
+        nonleaf.read(cursor.pid, pf);
+
+        printf("reading nonleaf with pid %i\n", cursor.pid);
+
+        // continue the search by following the correct pid
+        
+        nonleaf.locateChildPtr(searchKey, cursor.pid);
+
+        return locate(searchKey, cursor, ++depth);
+    }
+
 }
 
 /*
@@ -98,9 +145,9 @@ RC BTreeIndex::readForward(IndexCursor& cursor, int& key, RecordId& rid) {
 
     //read the (key, rid) pair into key, rid
     RC status = leaf.readEntry(cursor.eid, key, rid);
-    if (status != 0) {
-        return -1;
-    }
+    if (status != 0) 
+        return status;
+
     //printf("readForward(): key: %i, rid: {pid: %i, sid: %i} \n", key, rid.pid, rid.sid);
 
     // move the cursor forward to the next entry
