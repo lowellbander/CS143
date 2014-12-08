@@ -67,6 +67,8 @@ RC BTreeIndex::insert(int key, const RecordId& rid) {
 
     // TODO: error codes
     // TODO: error if the page is full and cannot hold any more nodes
+    // TODO: go through all of this code and be sure we're writing and reading
+    // whenever we need to
 
     //TODO: if the index is empty, create a new root and point it to this first
     //key in the B+ tree
@@ -112,9 +114,71 @@ RC BTreeIndex::insert(int key, const RecordId& rid) {
             }
             // TODO: 
             // there isn't room in this leaf, so we need to insert and split,
-            // then recursively insert the sibKey into the parent until we can
+            // then insert the sibKey into the parent until we can
             // insert into a parent nonleaf node without splitting.
 
+            BTLeafNode sibling;
+            int siblingKey = -1;
+
+            leaf.insertAndSplit(key, rid, sibling, siblingKey);
+
+            // save the sibling to file
+            int siblingPid = pf.endPid();
+            sibling.write(siblingPid, pf);
+
+            int keyToInsert = key;
+            PageId pidToInsert = siblingPid;
+
+            for (vector<PageId>::reverse_iterator parent_pid_itr = parents.rbegin();
+                    parent_pid_itr != parents.rend(); ++parent_pid_itr) {
+
+                BTNonLeafNode parent;
+                PageId parentPid = *parent_pid_itr;
+                parent.read(parentPid, pf);
+
+                // check to see if there is room in the parent
+                if (parent.getKeyCount() < parent.getMaxKeyCount()) {
+                    parent.insert(keyToInsert, pidToInsert);
+                    return parent.write(parentPid, pf);
+                }
+                else {
+                    // no room in parent, 
+                    // parent, insert & split, then check for room in parent's
+                    // parent until we can simply insert().
+                    // TODO: what happens when we create a new root?
+                    //          this can be deteceted when we're at depth 0? when we
+                    //          hit the beginning of the list of parents? when the
+                    //          pid of the nonleaf that we're looking at == rootPid?
+
+                    BTNonLeafNode uncle;
+                    int midKey = -1;
+                    parent.insertAndSplit(keyToInsert, pidToInsert, uncle, midKey);
+                    PageId unclePid = pf.endPid();
+                    uncle.write(unclePid, pf);
+
+                    keyToInsert = midKey;
+                    pidToInsert = unclePid;
+
+                }
+
+            }
+
+
+            //for (vector<PageId>::reverse_iterator parent_pid_ptr = parents.rbegin();
+            //                                            i != parents.rend(); ++i) {
+            //    BTNonLeafNode parent;
+            //    parent.read(*parent_pid_ptr, pf);
+            //    // if there is room in parent, we can insert and we're done
+            //    if (parent.getKeyCount() != parent.getMaxKeyCount()) {
+            //        //TODO: this needs to be insertAndSplit
+            //        parent.insert(key, leafPid);
+            //        return parent.write(*parent_pid_ptr, pf);
+            //    }
+            //    // else, we have to insert and split, then continue looping
+            //    else {
+            //        parent.insertAndSplit()
+            //    }
+            //}
                 
         }
         

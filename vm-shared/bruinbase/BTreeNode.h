@@ -133,6 +133,7 @@ class BTNonLeafNode {
 
     void showEntries();
     void showEntriesWithFirstPageId();
+    int getMaxKeyCount();
 
    /**
     * Insert a (key, pid) pair to the node.

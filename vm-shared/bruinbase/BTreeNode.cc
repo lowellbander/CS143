@@ -266,6 +266,11 @@ void BTNonLeafNode::showEntriesWithFirstPageId(){
     printf("\nFirst pid: %i",*ptr);
     showEntries();
 }
+
+int BTNonLeafNode::getMaxKeyCount() {
+    return maxKeyCount;
+}
+
 /*
  maxKeyCount = PageFile::PAGE_SIZE - PageId at the end - keyCount - One entry reserved for split
 */
