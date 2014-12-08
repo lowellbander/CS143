@@ -13,6 +13,8 @@
 #include "Bruinbase.h"
 #include "PageFile.h"
 #include "RecordFile.h"
+#include <iostream>
+#include <vector>
              
 //#define ROOT_PID 0
 
@@ -28,6 +30,8 @@ typedef struct {
   // The entry number inside the node
   int     eid;  
 } IndexCursor;
+
+void print_pids(std::vector<PageId> pids);
 
 /**
  * Implements a B-Tree index for bruinbase.
@@ -85,7 +89,8 @@ class BTreeIndex {
    * with the key value
    * @return error code. 0 if no error.
    */
-  RC locate(int searchKey, IndexCursor& cursor, int depth);
+  // the parents vector stores the pid's of the parent nodes of the leaf node
+  RC locate(int searchKey, IndexCursor& cursor, int depth, std::vector<PageId>& parents);
 
   /**
    * Read the (key, rid) pair at the location specified by the index cursor,

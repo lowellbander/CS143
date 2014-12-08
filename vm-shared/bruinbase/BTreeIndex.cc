@@ -14,6 +14,13 @@
 
 using namespace std;
 
+void print_pids(std::vector<PageId> pids) {
+    printf("current list of pid's:");
+    for (vector<PageId>::const_iterator i = pids.begin(); i != pids.end(); ++i)
+        cout << *i << ", ";
+    printf("\n");
+}
+
 /*
  * BTreeIndex constructor
  */
@@ -86,14 +93,15 @@ RC BTreeIndex::insert(int key, const RecordId& rid) {
 
         // find the leaf that we'd like to insert our key into
         IndexCursor cursor;
-        status = locate(key, cursor, NO_DEPTH);
+        vector<PageId> parents;
+        status = locate(key, cursor, NO_DEPTH, parents);
         // cursor.pid is now the pid of the leaf node that we'd like to insert into
         
         BTLeafNode leaf;
         PageId leafPid = cursor.pid;
         leaf.read(leafPid, pf);
 
-        // if there's room, we can insert here
+        // if there's room we can insert here
         if (leaf.getKeyCount() < leaf.getMaxKeyCount()) {
             return leaf.insert(key, rid);
         }
@@ -106,6 +114,8 @@ RC BTreeIndex::insert(int key, const RecordId& rid) {
             // there isn't room in this leaf, so we need to insert and split,
             // then recursively insert the sibKey into the parent until we can
             // insert into a parent nonleaf node without splitting.
+
+                
         }
         
     }
@@ -132,7 +142,8 @@ RC BTreeIndex::insert(int key, const RecordId& rid) {
  *                    with the key value.
  * @return error code. 0 if no error.
  */
-RC BTreeIndex::locate(int searchKey, IndexCursor& cursor, int depth) {
+RC BTreeIndex::locate(int searchKey, IndexCursor& cursor, int depth, 
+                                                    vector<PageId>& parents) {
     RC status;
 
     if (depth == treeHeight) {
@@ -163,10 +174,10 @@ RC BTreeIndex::locate(int searchKey, IndexCursor& cursor, int depth) {
         else if (++cursor.eid == leaf.getKeyCount())
             return RC_NO_SUCH_RECORD;
         else
-            return locate(searchKey, cursor, depth);
+            return locate(searchKey, cursor, depth, parents);
     }
     else {
-        // we are a nonleaf
+        // we are a nonleaf, possibly the root.
         
         // read in the node
         
@@ -174,12 +185,15 @@ RC BTreeIndex::locate(int searchKey, IndexCursor& cursor, int depth) {
         nonleaf.read(cursor.pid, pf);
 
         printf("reading nonleaf with pid %i\n", cursor.pid);
+        
+        // append the pid of this node to the list of parents
+        parents.push_back(cursor.pid);
 
         // continue the search by following the correct pid
         
         nonleaf.locateChildPtr(searchKey, cursor.pid);
 
-        return locate(searchKey, cursor, ++depth);
+        return locate(searchKey, cursor, ++depth, parents);
     }
 
 }

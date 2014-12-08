@@ -2,6 +2,7 @@
 #include "BTreeIndex.h"
 #include "string.h"
 #include "stdio.h"
+#include <vector>
 
 using namespace std;
 
@@ -12,7 +13,7 @@ int test_locate(){
 
     RC status ;
     PageFile pf;
-    string index_filename = "testindex.txt";
+    string index_filename = "test.idx";
     int rootPid = 0;
     status = pf.open(index_filename,'w');
     
@@ -70,7 +71,10 @@ int test_locate(){
     cursor.eid = 0;
     printf("the key 45 is located at {pid: 4, eid: 1}\n");
 
-    if ((status = index.locate(45, cursor, rootPid)) == 0)
+    vector<int> parents;
+    status = index.locate(45, cursor, rootPid, parents);
+    print_pids(parents);
+    if (status == 0)
         printf("found key 45 at {pid: %i, eid: %i}\n", cursor.pid, cursor.eid);
     else
         printf("locate() failed with error code %i\n", status);

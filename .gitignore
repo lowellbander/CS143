@@ -6,7 +6,8 @@
 .ssh/
 .sudo_as_admin_successful
 .viminfo
-.txt
 *.swp
 vm-shared/bruinbase/bruinbase
 test_index
+*.idx
+
