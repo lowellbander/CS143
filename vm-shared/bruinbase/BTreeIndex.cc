@@ -145,10 +145,6 @@ RC BTreeIndex::insert(int key, const RecordId& rid) {
                     // no room in parent, 
                     // parent, insert & split, then check for room in parent's
                     // parent until we can simply insert().
-                    // TODO: what happens when we create a new root?
-                    //          this can be deteceted when we're at depth 0? when we
-                    //          hit the beginning of the list of parents? when the
-                    //          pid of the nonleaf that we're looking at == rootPid?
 
                     BTNonLeafNode uncle;
                     int midKey = -1;
@@ -159,32 +155,18 @@ RC BTreeIndex::insert(int key, const RecordId& rid) {
                     keyToInsert = midKey;
                     pidToInsert = unclePid;
 
+                    // check to see whether we need to create a new root
+                    if (parentPid == rootPid) {
+                        // create and properly initialize new root
+                        BTNonLeafNode root;
+                        root.initializeRoot(parentPid, keyToInsert, unclePid);
+                        rootPid = pf.endPid(); // updates index.rootPid
+                        return root.write(rootPid, pf);
+                    }
                 }
-
             }
-
-
-            //for (vector<PageId>::reverse_iterator parent_pid_ptr = parents.rbegin();
-            //                                            i != parents.rend(); ++i) {
-            //    BTNonLeafNode parent;
-            //    parent.read(*parent_pid_ptr, pf);
-            //    // if there is room in parent, we can insert and we're done
-            //    if (parent.getKeyCount() != parent.getMaxKeyCount()) {
-            //        //TODO: this needs to be insertAndSplit
-            //        parent.insert(key, leafPid);
-            //        return parent.write(*parent_pid_ptr, pf);
-            //    }
-            //    // else, we have to insert and split, then continue looping
-            //    else {
-            //        parent.insertAndSplit()
-            //    }
-            //}
-                
         }
-        
     }
-
-    return 0;
 }
 
 /*
