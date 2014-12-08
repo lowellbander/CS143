@@ -412,21 +412,23 @@ RC BTNonLeafNode::insertAndSplit(int key, PageId pid, BTNonLeafNode& sibling, in
  */
 RC BTNonLeafNode::locateChildPtr(int searchKey, PageId& pid) { 
 
-    // TODO: edge case: where the element we're looking for is in the
-    // right most pointer
-
-    Entry *current = (Entry*) buffer;
-    int nKeys = getKeyCount();
-    for (pid = 0; pid < nKeys; ++pid, ++current) {
-        if (current->key > searchKey)
-            return 0;
+    Entry *current = (Entry*) (buffer+ENTRY_OFFSET);
+    if(current->key > searchKey){
+        PageId *ptr = (PageId*) buffer;
+        pid = *ptr;
+        return 0;
     }
-    // didn't find it, need to return last pid
-    pid = (current + nKeys - 1)->pid;
+    int nKeys = getKeyCount();
+    int i = 0;
+    for (i= 1; i < nKeys; i++) {
+        if ((current+i)->key > searchKey){
+            pid = (current+i-1)->pid;
+            return 0;       
+        }
+    }
+    
+    pid = (current + i-1)->pid;
     return 0;
-
-    //TODO: errors
-
 }
 
 /*

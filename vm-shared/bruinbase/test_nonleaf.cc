@@ -62,11 +62,40 @@ int test_insertAndSplit(){
     left.showEntriesWithFirstPageId();
     right.showEntriesWithFirstPageId(); 
 }
+
+int test_locateChildPtr(){
+    RC status = 0;
+    BTNonLeafNode test;
+
+    test.initializeRoot(1,10,2);
+    test.insert(20,3);
+    test.insert(30, 4);   
+    test.showEntriesWithFirstPageId();
+
+    PageId pid = -1;
+    test.locateChildPtr(5, pid);
+    if(pid == 1)
+        printf("Smaller than all serachKey test succesful.\n");
+    else
+        printf("smaller test failed.\n");
+    test.locateChildPtr(25, pid);               
+    if(pid == 3)
+        printf("Mid sized searchKey test succesful.\n");
+    else
+        printf("test mid locate failed\n");
+    test.locateChildPtr(500, pid);
+    if(pid == 4)
+        printf("Larger than all searchKey test successful.\n");
+    else
+        printf("test largest locate failed.\n");
+}
 int main() {
     printf("\n\n");
     //TODO: key is 0 tests
-    test_insert();
+    //test_insert();
     //test_root();
-   //  test_insertAndSplit();
+    //test_insertAndSplit();
+    test_locateChildPtr();
+    
     printf("\n\n");
 }
