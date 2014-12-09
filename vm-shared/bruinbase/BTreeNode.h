@@ -12,6 +12,7 @@
 
 #include "RecordFile.h"
 #include "PageFile.h"
+#include <stdbool.h>
 
 #define NULL_PID -1
 
@@ -28,6 +29,7 @@ class BTLeafNode {
 
     void showEntries();
     int getMaxKeyCount();
+    bool isFull();
 
    /**
     * Insert the (key, rid) pair to the node.
@@ -136,6 +138,7 @@ class BTNonLeafNode {
     void showEntries();
     void showEntriesWithFirstPageId();
     int getMaxKeyCount();
+    bool isFull();
 
    /**
     * Insert a (key, pid) pair to the node.

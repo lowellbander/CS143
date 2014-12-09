@@ -32,6 +32,8 @@ int BTLeafNode::getMaxKeyCount() {
     return maxKeyCount;
 }
 
+bool BTLeafNode::isFull() { return (getKeyCount() >= maxKeyCount); }
+
 /*
  * Read the content of the node from the page pid in the PageFile pf.
  * @param pid[IN] the PageId to read
@@ -79,9 +81,7 @@ int BTLeafNode::getKeyCount()
 RC BTLeafNode::insert(int key, const RecordId& rid) { 
 
     //check if we have enough space for new node
-    // TODO: >=
-    if(getKeyCount() + 1 > maxKeyCount)
-        return RC_NODE_FULL;
+    if (isFull()) return RC_NODE_FULL;
 
     //we have space, let's continue
     int eid = -1;
@@ -258,6 +258,8 @@ int BTNonLeafNode::getMaxKeyCount() {
     return maxKeyCount;
 }
 
+bool BTNonLeafNode::isFull() { return (getKeyCount() >= maxKeyCount); }
+
 /*
  maxKeyCount = PageFile::PAGE_SIZE - PageId at the end - keyCount - One entry reserved for split
 */
@@ -316,9 +318,7 @@ int BTNonLeafNode::getKeyCount() {
  * @return 0 if successful. Return an error code if the node is full.
  */
 RC BTNonLeafNode::insert(int key, PageId pid){
-    // TODO: change this to >=
-    if(getKeyCount() + 1 > maxKeyCount)
-        return RC_NODE_FULL;
+    if (isFull()) return RC_NODE_FULL;
 
    return insertWithoutSizeCheck(key,pid);
 }
