@@ -257,7 +257,7 @@ void BTNonLeafNode::showEntries() {
     int nKeys = getKeyCount();
     int i = 0;
     for (Entry* e = (Entry*)(buffer+ENTRY_OFFSET); i < nKeys + 1; ++e, ++i) {
-        printf("entry #%i: {pid: %i, key: %i}\n", i, e->pid, e->key);
+        printf("entry #%i: {key: %i, pid: %i}\n", i, e->key, e->pid);
     }
 }
 
@@ -302,7 +302,7 @@ RC BTNonLeafNode::read(PageId pid, const PageFile& pf){
  * @return 0 if successful. Return an error code if there is an error.
  */
 RC BTNonLeafNode::write(PageId pid, PageFile& pf){
-    memcpy(buffer, &keyCount, sizeof(int));
+    //memcpy(buffer, &keyCount, sizeof(int));
     RC rc = pf.write(pid, buffer); 
     
     return rc;
