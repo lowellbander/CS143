@@ -15,6 +15,8 @@
 
 #define NULL_PID -1
 
+const unsigned ROOT_DEPTH = 1;
+
 /**
  * BTLeafNode: The class representing a B+tree leaf node.
  */

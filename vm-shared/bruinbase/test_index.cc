@@ -72,7 +72,7 @@ int test_locate(){
     printf("the key 45 is located at {pid: 4, eid: 1}\n");
 
     vector<int> parents;
-    status = index.locate(45, cursor, rootPid, parents);
+    status = index.locate(45, cursor, ROOT_DEPTH, parents);
     print_pids(parents);
     if (status == 0)
         printf("found key 45 at {pid: %i, eid: %i}\n", cursor.pid, cursor.eid);
