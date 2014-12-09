@@ -201,26 +201,8 @@ RC BTreeIndex::locate(int searchKey, IndexCursor& cursor, int depth,
 
         printf("reading leaf with pid %i\n", cursor.pid);
 
-        // either:
-        // keep looking,
-        // or return immediately, you found the key
-        // or return immediately, the key does not exist in this tree
+        return leaf.locate(searchKey, cursor.eid);
 
-        RecordId rid;
-        int key;
-
-        status = leaf.readEntry(cursor.eid, key, rid);
-        if (status != 0) {
-            printf("readEntry() returned %i\n", status);
-            return -1;
-        }
-    
-        if (key >= searchKey) 
-            return 0; // found what we're looking for
-        else if (++cursor.eid == leaf.getKeyCount())
-            return RC_NO_SUCH_RECORD;
-        else
-            return locate(searchKey, cursor, depth, parents);
     }
     else {
         // we are a nonleaf, possibly the root.

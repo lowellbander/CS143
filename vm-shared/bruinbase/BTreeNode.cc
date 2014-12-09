@@ -76,46 +76,32 @@ int BTLeafNode::getKeyCount()
  * @param rid[IN] the RecordId to insert
  * @return 0 if successful. Return an error code if the node is full.
  */
-RC BTLeafNode::insert(int key, const RecordId& rid)
-{ 
-    //printf("beginning insert(); keycount is %i\n", getKeyCount());
+RC BTLeafNode::insert(int key, const RecordId& rid) { 
+
     //check if we have enough space for new node
+    // TODO: >=
     if(getKeyCount() + 1 > maxKeyCount)
         return RC_NODE_FULL;
 
     //we have space, let's continue
     int eid = -1;
 
-    int status;
-    if(status = locate(key,eid)){
-        //key not found
-        return status;
-    }
-    else{
-       // printf("eid: %i\n", eid);
+    RC status = locate(key, eid);
         //shift stuff to the right
         int nKeys = getKeyCount();
-       // printf("nKeys: %i\n", nKeys);
 
         //TODO: edge case: first insertion
         for (int i = nKeys; i > eid; --i) {
-        //    printf("looping ");
             Entry* current = (Entry*) buffer + i; // points to last entry
             *current = *(current - 1);
         }
-      //  printf("\n");
 
         //insert key at new space
         Entry* newEntry = (Entry*) buffer + eid;
         (*newEntry).key = key;
         (*newEntry).rid = rid;
 
-    //    printf("done with insertion\n");
-    //    printf("getKeyCount() returns %i after insertion\n", getKeyCount());
-    //    printf("newEntry: {key: %i, rid: {pid: %i, sid: %i}}\n", (*newEntry).key, (*newEntry).rid.pid, (*newEntry).rid.sid);
-
         return 0;
-    }    
  }
 
 /*
@@ -173,25 +159,26 @@ RC BTLeafNode::insertAndSplit(int key, const RecordId& rid,
  * @param eid[OUT] the entry number that contains a key larger than or equalty to searchKey
  * @return 0 if successful. Return an error code if there is an error.
  */
-RC BTLeafNode::locate(int searchKey, int& eid)
-{
+RC BTLeafNode::locate(int searchKey, int& eid) {
+
     Entry *current = (Entry *) buffer;
     int nKeys = getKeyCount();
-    //printf("searching for %i\n", searchKey);
     
     for(eid = 0; eid < nKeys; ++eid, ++current) {
-      //  printf("current->key: %i\n", current->key);
-        if((current->key) >= searchKey) {
-            //printf("found! current->key: %i\n", current->key);
+        // if key == searchKey, return 0
+        // else if key > searchKey, return NO RECORD
+        // but either way, point to where we should insert
+
+        if (current->key == searchKey)
             return 0;
-            
-        }
+        else if (current->key > searchKey)
+            return RC_NO_SUCH_RECORD;
     } 
-    // if all keys are strictly larger than searchKey, 
-    // eid shall point to the beginning of the array.
-    //printf("NOT FOUND\n");
+
+    // if all keys are smaller than searchKey, then the eid will point to the
+    // end of the array 
     
-    return 0;
+    return RC_NO_SUCH_RECORD;
 }
 
 /*
@@ -329,6 +316,7 @@ int BTNonLeafNode::getKeyCount() {
  * @return 0 if successful. Return an error code if the node is full.
  */
 RC BTNonLeafNode::insert(int key, PageId pid){
+    // TODO: change this to >=
     if(getKeyCount() + 1 > maxKeyCount)
         return RC_NODE_FULL;
 

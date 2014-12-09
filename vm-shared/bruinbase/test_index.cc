@@ -65,9 +65,10 @@ int test_locate(){
     printf("the height of the tree is %i\n", newHeight);
 
     IndexCursor cursor;
-    cursor.pid = rootPid;
 
     // TODO: test locate() on an existing key
+    printf("\n * * * * * * * * * * * * * * * * * * * * * * * * \n");
+    cursor.pid = rootPid;
     cursor.eid = 0;
     printf("the key 45 is located at {pid: 4, eid: 1}\n");
 
@@ -79,9 +80,21 @@ int test_locate(){
     else
         printf("locate() failed with error code %i\n", status);
 
+    printf("\n * * * * * * * * * * * * * * * * * * * * * * * * \n\n");
+
     // TODO: test locate() on a key which does not exist
     
+    cursor.pid = rootPid;
+    cursor.eid = 0;   
+    parents.clear(); //empties the vector
+    status = index.locate(55, cursor, ROOT_DEPTH, parents);
 
+    if (status == 0)
+        printf("found key 55 at {pid: %i, eid: %i}\n", cursor.pid, cursor.eid);
+    else if (status == RC_NO_SUCH_RECORD)
+        printf("locate() failed with RC_NO_SUCH_RECORD\n");
+    else 
+        printf("locate() failed with error code %i\n", status);
 }
 
 int test_insert() {
