@@ -33,9 +33,9 @@ BTreeIndex::BTreeIndex() {
  * A function used only when testing to set the height of the B+ tree.
  * @return the new height of the tree
  * */
-int BTreeIndex::setTreeHeight(int height) {
-    return treeHeight = height;
-}
+int BTreeIndex::setTreeHeight(int height) { return treeHeight = height; }
+
+int BTreeIndex::getRootPid() { return rootPid; }
 
 /*
  * Open the index file in read or write mode.
@@ -52,9 +52,7 @@ RC BTreeIndex::open(const string& indexname, char mode) {
  * Close the index file.
  * @return error code. 0 if no error
  */
-RC BTreeIndex::close() {
-    return pf.close();
-}
+RC BTreeIndex::close() { return pf.close(); }
 
 /*
  * Insert (key, RecordId) pair to the index.
@@ -65,26 +63,34 @@ RC BTreeIndex::close() {
 RC BTreeIndex::insert(int key, const RecordId& rid) {
     RC status;
 
+    printf("CALLED index.INSERT()\n");
+
     // TODO: error codes
     // TODO: error if the page is full and cannot hold any more nodes
     // TODO: go through all of this code and be sure we're writing and reading
     // whenever we need to
 
-    //TODO: if the index is empty, create a new root and point it to this first
+    //if the index is empty, create a new root and point it to this first
     //key in the B+ tree
 
     if (rootPid == NULL_PID) {
+        printf("empty index . . .\n");
         // create the first leaf node
         BTLeafNode leaf;
         leaf.insert(key, rid);
         PageId leafPid = pf.endPid();
-        leaf.write(leafPid, pf);
+        status = leaf.write(leafPid, pf);
 
         // create the root node, point it to leaf 
         BTNonLeafNode root;
         root.initializeRoot(NULL_PID, key, leafPid);
         rootPid = pf.endPid(); // also sets index::rootPid
-        root.write(rootPid, pf);
+        status = root.write(rootPid, pf);
+
+        printf("the leaf's pid is %i\n", leafPid);
+        printf("the root's pid is %i\n", rootPid);
+        printf("root.write() returned %i. here's our newly created root:\n", status);
+        root.showEntriesWithFirstPageId();
 
         treeHeight = 2; // 1 for root + 1 for leaf
         
@@ -104,14 +110,15 @@ RC BTreeIndex::insert(int key, const RecordId& rid) {
         leaf.read(leafPid, pf);
 
         // if there's room we can insert here
-        if (leaf.getKeyCount() < leaf.getMaxKeyCount()) {
-            return leaf.insert(key, rid);
-        }
+        if (!leaf.isFull()) return leaf.insert(key, rid);
+        // if (leaf.getKeyCount() < leaf.getMaxKeyCount()) {
+        //     return leaf.insert(key, rid);
+        // }
         else {
-            {
-                printf("this part of index::insert() not yet implemented\n");
-                return -1;
-            }
+            //{
+            //    printf("this part of index::insert() not yet implemented\n");
+            //    return -1;
+            //}
             // TODO: 
             // there isn't room in this leaf, so we need to insert and split,
             // then insert the sibKey into the parent until we can
@@ -200,9 +207,9 @@ RC BTreeIndex::locate(int searchKey, IndexCursor& cursor, int depth,
         leaf.read(cursor.pid, pf);
 
         printf("reading leaf with pid %i\n", cursor.pid);
+        leaf.showEntries();
 
         return leaf.locate(searchKey, cursor.eid);
-
     }
     else {
         // we are a nonleaf, possibly the root.
@@ -213,6 +220,7 @@ RC BTreeIndex::locate(int searchKey, IndexCursor& cursor, int depth,
         nonleaf.read(cursor.pid, pf);
 
         printf("reading nonleaf with pid %i\n", cursor.pid);
+        nonleaf.showEntriesWithFirstPageId();
         
         // append the pid of this node to the list of parents
         parents.push_back(cursor.pid);

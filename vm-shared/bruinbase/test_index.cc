@@ -1,7 +1,7 @@
 #include "BTreeNode.h"
 #include "BTreeIndex.h"
 #include "string.h"
-#include "stdio.h"
+#include <stdio.h>
 #include <vector>
 
 using namespace std;
@@ -97,14 +97,49 @@ int test_locate(){
         printf("locate() failed with error code %i\n", status);
 }
 
-int test_insert() {
+int test_simple_insert() {
+    printf("\n\nTEST INSERT()\n\n");
+    RC status;
+
     // TODO: create a new index
+    BTreeIndex index;
+    string index_filename = "simple_insertion_test.idx";
+    remove(index_filename.c_str());
+    index.open(index_filename, 'w');
     
     // TODO: insert a single value, test locate and readForward on it
-    
-    // TODO: insert several values, test locate and readForward on them
+    IndexCursor cursor;
+    {
+        int key = 123;
+        RecordId rid;
+        rid.pid = 42;
+        rid.sid = 69;
+
+        status = index.insert(key, rid);
+        printf("insert() returned %i\n", status);
+        
+        cursor.pid = index.getRootPid();
+        cursor.eid = 0;
+        vector<PageId> parents;
+        status = index.locate(key, cursor, ROOT_DEPTH, parents);
+        
+        printf("locate() returned %i\n", status);
+    }
+
+    {
+        int key;
+        RecordId rid;
+        status = index.readForward(cursor, key, rid);
+        printf("readForward() returned %i: key: %i, rid: {pid: %i, sid: %i} \n", 
+                                                status, key, rid.pid, rid.sid);
+    }
+
+    index.close();
+
 }
 
 int main() {
     test_locate();
+    test_simple_insert();
+    // TODO: insert several values, test locate and readForward on them
 }
