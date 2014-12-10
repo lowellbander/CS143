@@ -13,10 +13,12 @@
 #include "Bruinbase.h"
 #include "PageFile.h"
 #include "RecordFile.h"
+#include "BTreeNode.h"
 #include <iostream>
 #include <vector>
              
-//#define ROOT_PID 0
+//const int ROOT_DEPTH = 1;
+const int META_PID = 0;
 
 /**
  * The data structure to point to a particular entry at a b+tree leaf node.

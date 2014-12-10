@@ -10,8 +10,6 @@
 #include "BTreeIndex.h"
 #include "BTreeNode.h"
 
-#define ROOT_DEPTH 1
-
 using namespace std;
 
 void print_pids(std::vector<PageId> pids) {
