@@ -13,10 +13,10 @@
 using namespace std;
 
 void print_pids(std::vector<PageId> pids) {
-    printf("current list of parent pid's:");
+    ////printf("current list of parent pid's:");
     for (vector<PageId>::const_iterator i = pids.begin(); i != pids.end(); ++i)
         cout << *i << ", ";
-    printf("\n");
+    ////printf("\n");
 }
 
 /*
@@ -52,10 +52,10 @@ RC BTreeIndex::open(const string& indexname, char mode) {
     if (status != 0) return status;
 
     //meta.load(META_PID, pf);
-    printf("called open()\n");
+    ////printf("called open()\n");
     // only load from meta if this isn't the first time we've dealt with the
     // file
-    printf("the first writable pid is %i\n", pf.endPid());
+    ////printf("the first writable pid is %i\n", pf.endPid());
     if (pf.endPid() != 0) {
         BTMetaNode meta;
         meta.load(META_PID, pf);
@@ -122,17 +122,17 @@ RC BTreeIndex::insert(int key, const RecordId& rid) {
         BTLeafNode meta;
         meta.write(META_PID, pf);
         //meta.save(META_PID, pf);
-        printf("now the first writable pid should be %i\n", pf.endPid());
+        ////printf("now the first writable pid should be %i\n", pf.endPid());
 
-        printf("empty index . . .\n");
+        ////printf("empty index . . .\n");
         // create the first leaf node
         BTLeafNode leaf;
         leaf.insert(key, rid);
         PageId leafPid = pf.endPid();
         status = leaf.write(leafPid, pf);
-        printf("leaf.write() returned %i. here's our newly created leaf:\n", status);
+        //printf("leaf.write() returned %i. here's our newly created leaf:\n", status);
         leaf.showEntries();
-        printf("the new leaf has %i keys\n", leaf.getKeyCount());
+        //printf("the new leaf has %i keys\n", leaf.getKeyCount());
 
         // create the root node, point it to leaf 
         BTNonLeafNode root;
@@ -140,9 +140,9 @@ RC BTreeIndex::insert(int key, const RecordId& rid) {
         rootPid = pf.endPid(); // also sets index::rootPid
         status = root.write(rootPid, pf);
 
-        printf("the leaf's pid is %i\n", leafPid);
-        printf("the root's pid is %i\n", rootPid);
-        printf("root.write() returned %i. here's our newly created root:\n", status);
+        //printf("the leaf's pid is %i\n", leafPid);
+        //printf("the root's pid is %i\n", rootPid);
+        //printf("root.write() returned %i. here's our newly created root:\n", status);
         root.showEntriesWithFirstPageId();
 
         treeHeight = 2; // 1 for root + 1 for leaf
@@ -163,21 +163,21 @@ RC BTreeIndex::insert(int key, const RecordId& rid) {
         BTLeafNode leaf;
         PageId leafPid = cursor.pid;
         leaf.read(leafPid, pf);
-        printf("leaf.getKeyCount(): %i\n", leaf.getKeyCount());
+        //printf("leaf.getKeyCount(): %i\n", leaf.getKeyCount());
 
         // if there's room we can insert here
         if (!leaf.isFull()) {
-            printf("There's still room in this leaf for insertion()\n");
+            //printf("There's still room in this leaf for insertion()\n");
             //leaf.showEntries();
             status = leaf.insert(key, rid);
             leaf.write(leafPid, pf);
-            printf("after insertion:\n");
+            //printf("after insertion:\n");
             leaf.showEntries();
             return status;
         } else {
-            printf("LEAF IS FULL! splitting and inserting midkey in parent\n");
+            //printf("LEAF IS FULL! splitting and inserting midkey in parent\n");
             //{
-            //    printf("this part of index::insert() not yet implemented\n");
+            //    //printf("this part of index::insert() not yet implemented\n");
             //    return -1;
             //}
             // TODO: 
@@ -203,26 +203,26 @@ RC BTreeIndex::insert(int key, const RecordId& rid) {
             for (vector<PageId>::reverse_iterator parent_pid_itr = parents.rbegin();
                     parent_pid_itr != parents.rend(); ++parent_pid_itr) {
 
-                printf("keyToInsert: %i, pidToInsert: %i\n", keyToInsert, pidToInsert);
+                //printf("keyToInsert: %i, pidToInsert: %i\n", keyToInsert, pidToInsert);
 
                 BTNonLeafNode parent;
                 PageId parentPid = *parent_pid_itr;
                 parent.read(parentPid, pf);
-                printf("inserting into parent with pid %i\n", parentPid);
-                printf("before insert:\n");
+                //printf("inserting into parent with pid %i\n", parentPid);
+                //printf("before insert:\n");
                 parent.showEntriesWithFirstPageId();
 
                 // check to see if there is room in the parent
                 if (!parent.isFull()) {
-                    printf("room in parent\n");
+                    //printf("room in parent\n");
                     parent.insert(keyToInsert, pidToInsert);
                     status = parent.write(parentPid, pf);
-                    printf("after insert:\n");
+                    //printf("after insert:\n");
                     parent.showEntriesWithFirstPageId();
                     return status;
                 }
                 else {
-                    printf("NOROOMINPARENT\n");
+                    //printf("NOROOMINPARENT\n");
                     // no room in parent, 
                     // parent, insert & split, then check for room in parent's
                     // parent until we can simply insert().
@@ -241,7 +241,7 @@ RC BTreeIndex::insert(int key, const RecordId& rid) {
 
                     // check to see whether we need to create a new root
                     if (parentPid == rootPid) {
-                        printf("creating new root\n");
+                        //printf("creating new root\n");
                         // create and properly initialize new root
                         BTNonLeafNode root;
                         root.initializeRoot(parentPid, keyToInsert, piblingPid);
@@ -284,7 +284,7 @@ RC BTreeIndex::locate(int searchKey, IndexCursor& cursor, int depth,
         BTLeafNode leaf;
         leaf.read(cursor.pid, pf);
 
-        printf("reading leaf with pid %i\n", cursor.pid);
+        /////printf("reading leaf with pid %i\n", cursor.pid);
         leaf.showEntries();
 
         return leaf.locate(searchKey, cursor.eid);
@@ -297,10 +297,10 @@ RC BTreeIndex::locate(int searchKey, IndexCursor& cursor, int depth,
         BTNonLeafNode nonleaf;
         nonleaf.read(cursor.pid, pf);
 
-        if (cursor.pid == rootPid)
-            printf("reading root (pid: %i)\n", rootPid);
-        else
-            printf("reading nonleaf with pid %i\n", cursor.pid);
+        //if (cursor.pid == rootPid)
+        //    //printf("reading root (pid: %i)\n", rootPid);
+        //else
+        //    //printf("reading nonleaf with pid %i\n", cursor.pid);
         nonleaf.showEntriesWithFirstPageId();
         
         // append the pid of this node to the list of parents
@@ -336,7 +336,7 @@ RC BTreeIndex::readForward(IndexCursor& cursor, int& key, RecordId& rid) {
     if (status != 0) 
         return status;
 
-    //printf("readForward(): key: %i, rid: {pid: %i, sid: %i} \n", key, rid.pid, rid.sid);
+    ////printf("readForward(): key: %i, rid: {pid: %i, sid: %i} \n", key, rid.pid, rid.sid);
 
     // move the cursor forward to the next entry
     ++cursor.eid;
