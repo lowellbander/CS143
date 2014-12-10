@@ -35,6 +35,27 @@ typedef struct {
 
 void print_pids(std::vector<PageId> pids);
 
+const int META_ROOTPID_INDEX = 0;
+const int META_TREEHEIGHT_INDEX = 0;
+
+// TODO: MAKE THIS A STRUCT THING.
+
+typedef struct {
+    PageId rootPid;
+    int treeHeight;
+} metadata;
+
+class BTMetaNode {
+    public:
+        RC load(PageId pid, const PageFile& pf);
+        RC save(PageId pid, PageFile& pf);
+        
+        PageId rootPid;
+        int treeHeight;
+
+        char buffer[PageFile::PAGE_SIZE];
+};
+
 /**
  * Implements a B-Tree index for bruinbase.
  * 
@@ -115,6 +136,8 @@ class BTreeIndex {
   /// this class is destructed. Make sure to store the values of the two 
   /// variables in disk, so that they can be reconstructed when the index
   /// is opened again later.
+
+  BTMetaNode meta;
 };
 
 #endif /* BTREEINDEX_H */

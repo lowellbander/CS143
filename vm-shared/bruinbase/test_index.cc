@@ -158,20 +158,21 @@ int test_multi_insert(unsigned how_many) {
      * */
     printf("\n\nTEST MULTI-INSERT()\n\n");
     
-    // initialize index
-    RC status;
-    BTreeIndex index;
     string index_filename = "multi_insertion_test.idx";
-    remove(index_filename.c_str());
-    index.open(index_filename, 'w');
-
-    int key = 100;
-    RecordId rid;
-    rid.pid = 1000;
-    rid.sid = 1;
-
-    // insert several values
     {
+        // initialize index
+        RC status;
+        BTreeIndex index;
+        remove(index_filename.c_str());
+        printf("calling open()\n");
+        index.open(index_filename, 'w');
+
+        int key = 100;
+        RecordId rid;
+        rid.pid = 1000;
+        rid.sid = 1;
+
+        // insert several values
         for (int i = 0; i < how_many; ++i) {
             status = index.insert(key, rid);
             printf("index.insert() returned %i for key: %i, rid: {pid: %i, sid: %i}\n",
@@ -182,13 +183,34 @@ int test_multi_insert(unsigned how_many) {
             rid.pid++;
             rid.sid++;
         }
+        index.close();
+    }
+    // read the values with readForward
+    {
+        RC status;
+        BTreeIndex index;
+        //remove(index_filename.c_str());
+        printf("calling open()\n");
+        status = index.open(index_filename, 'w');
+        printf("index.open() returned %i\n", status);
+
+        int key = 100;
+        IndexCursor cursor;
+        cursor.pid = index.getRootPid();
+        printf("root pid is %i\n", cursor.pid);
+        vector<PageId> parents;
+        status = index.locate(key, cursor, ROOT_DEPTH, parents);
+
+        printf("cursor: {pid: %i, eid: %i}\n", cursor.pid, cursor.eid);
+
+
     }
 }
 
 int test_getKeyCount();
 
 int main() {
-    test_locate();
+    //test_locate();
     test_simple_insert();
-    test_multi_insert(90);
+    test_multi_insert(5);
 }

@@ -43,8 +43,31 @@ int BTreeIndex::getRootPid() { return rootPid; }
  * @return error code. 0 if no error
  */
 RC BTreeIndex::open(const string& indexname, char mode) {
+    // TODO: whenever we close, we will try to save the values in meta and write
+    // them to the buffer. this will cause problems if we opened the pagefile in
+    // readonly mode.
     // TODO: set rootPid, treeHeight
-    return pf.open(indexname, mode);
+
+    RC status = pf.open(indexname, mode);
+    if (status != 0) return status;
+
+    //meta.load(META_PID, pf);
+    printf("called open()\n");
+    // only load from meta if this isn't the first time we've dealt with the
+    // file
+    printf("the first writable pid is %i\n", pf.endPid());
+    if (pf.endPid() != 0) {
+        BTMetaNode meta;
+        meta.load(META_PID, pf);
+        metadata* meta_ptr = (metadata*) meta.buffer;
+        rootPid = meta_ptr->rootPid;
+        treeHeight = meta_ptr->treeHeight;
+        
+        //rootPid = meta.buffer[META_ROOTPID_INDEX];
+        //treeHeight = meta.buffer[META_TREEHEIGHT_INDEX];
+    }
+
+    return 0;
 }
 
 /*
@@ -53,8 +76,28 @@ RC BTreeIndex::open(const string& indexname, char mode) {
  */
 RC BTreeIndex::close() { 
     // TODO: save rootPid, treeHeight to file
+    // only save to memory if we actually inserted something
+    if (pf.endPid() != 0) {
+        BTMetaNode meta;
+        meta.load(META_PID, pf);
+        metadata* meta_ptr = (metadata*) meta.buffer;
+
+        meta_ptr->rootPid = rootPid;
+        meta_ptr->treeHeight = treeHeight;
+
+        meta.save(META_PID, pf);
+    }
     return pf.close(); 
 }
+
+RC BTMetaNode::load(PageId pid, const PageFile& pf) {
+    return pf.read(pid, buffer);
+}
+
+RC BTMetaNode::save(PageId pid, PageFile& pf) {
+    return pf.write(pid, buffer);
+}
+
 
 /*
  * Insert (key, RecordId) pair to the index.
@@ -74,6 +117,13 @@ RC BTreeIndex::insert(int key, const RecordId& rid) {
     //key in the B+ tree
 
     if (rootPid == NULL_PID) {
+        // reserve the first page in the page file for bookkeeping
+        
+        BTLeafNode meta;
+        meta.write(META_PID, pf);
+        //meta.save(META_PID, pf);
+        printf("now the first writable pid should be %i\n", pf.endPid());
+
         printf("empty index . . .\n");
         // create the first leaf node
         BTLeafNode leaf;
@@ -172,6 +222,7 @@ RC BTreeIndex::insert(int key, const RecordId& rid) {
                     return status;
                 }
                 else {
+                    printf("NOROOMINPARENT\n");
                     // no room in parent, 
                     // parent, insert & split, then check for room in parent's
                     // parent until we can simply insert().
@@ -190,6 +241,7 @@ RC BTreeIndex::insert(int key, const RecordId& rid) {
 
                     // check to see whether we need to create a new root
                     if (parentPid == rootPid) {
+                        printf("creating new root\n");
                         // create and properly initialize new root
                         BTNonLeafNode root;
                         root.initializeRoot(parentPid, keyToInsert, piblingPid);

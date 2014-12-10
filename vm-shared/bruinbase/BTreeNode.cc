@@ -262,7 +262,9 @@ int BTNonLeafNode::getMaxKeyCount() {
     return maxKeyCount;
 }
 
-bool BTNonLeafNode::isFull() { return (getKeyCount() >= maxKeyCount); }
+bool BTNonLeafNode::isFull() { 
+    printf("maxKeyCount is %i\n", maxKeyCount);
+    return (getKeyCount() >= maxKeyCount); }
 
 /*
  maxKeyCount = PageFile::PAGE_SIZE - PageId at the end - keyCount - One entry reserved for split
@@ -338,7 +340,7 @@ RC BTNonLeafNode::insertWithoutSizeCheck(int key, PageId pid) {
     int index;
     printf("the key we're trying to insert is %i\n", key);
     for (index = 0; index < nKeys; ++index) {
-        printf("the key we're comparing against is %i\n", entries[index].key);
+        //printf("the key we're comparing against is %i\n", entries[index].key);
         if (entries[index].key >= key)
             break;
     }
