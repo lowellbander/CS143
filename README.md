@@ -6,3 +6,4 @@
 
 * call `write()` after inserting into any node
 * set the pid of the cursor to the pid of the root node before calling `index::locate()`
+* whenever `index::locate()` is called, except by itself, the 3rd argument `depth` should be `ROOT_DEPTH`, which is 1.
