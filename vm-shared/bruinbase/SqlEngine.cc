@@ -12,6 +12,7 @@
 #include <fstream>
 #include "Bruinbase.h"
 #include "SqlEngine.h"
+#include "BTreeIndex.h"
 
 using namespace std;
 
@@ -34,89 +35,217 @@ RC SqlEngine::run(FILE* commandline)
 
 RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
 {
-  RecordFile rf;   // RecordFile containing the table
-  RecordId   rid;  // record cursor for table scanning
+    RecordFile rf;   // RecordFile containing the table
+    RecordId   rid;  // record cursor for table scanning
+    BTreeIndex bt_index;
+    IndexCursor i_cursor;
 
-  RC     rc;
-  int    key;     
-  string value;
-  int    count;
-  int    diff;
+    RC     rc;
+    int    key;     
+    string value;
+    int    count;
+    int    diff;
 
-  // open the table file
-  if ((rc = rf.open(table + ".tbl", 'r')) < 0) {
+    // open the table file
+    if ((rc = rf.open(table + ".tbl", 'r')) < 0) {
     fprintf(stderr, "Error: table %s does not exist\n", table.c_str());
     return rc;
-  }
-
-  // scan the table file from the beginning
-  rid.pid = rid.sid = 0;
-  count = 0;
-  while (rid < rf.endRid()) {
-    // read the tuple
-    if ((rc = rf.read(rid, key, value)) < 0) {
-      fprintf(stderr, "Error: while reading a tuple from table %s\n", table.c_str());
-      goto exit_select;
     }
 
-    // check the conditions on the tuple
-    for (unsigned i = 0; i < cond.size(); i++) {
-      // compute the difference between the tuple value and the condition value
-      switch (cond[i].attr) {
-      case 1:
-	diff = key - atoi(cond[i].value);
-	break;
-      case 2:
-	diff = strcmp(value.c_str(), cond[i].value);
-	break;
-      }
+    count = 0;
+    rc = bt_index.open(table + ".idx", 'w');
+    if(rc != 0)
+    {
+        // scan the table file from the beginning
+        rid.pid = rid.sid = 0;
+        while (rid < rf.endRid()) {
+        // read the tuple
+        if ((rc = rf.read(rid, key, value)) < 0) {
+          fprintf(stderr, "Error: while reading a tuple from table %s\n", table.c_str());
+          goto exit_select;
+        }
 
-      // skip the tuple if any condition is not met
-      switch (cond[i].comp) {
-      case SelCond::EQ:
-	if (diff != 0) goto next_tuple;
-	break;
-      case SelCond::NE:
-	if (diff == 0) goto next_tuple;
-	break;
-      case SelCond::GT:
-	if (diff <= 0) goto next_tuple;
-	break;
-      case SelCond::LT:
-	if (diff >= 0) goto next_tuple;
-	break;
-      case SelCond::GE:
-	if (diff < 0) goto next_tuple;
-	break;
-      case SelCond::LE:
-	if (diff > 0) goto next_tuple;
-	break;
-      }
+        // check the conditions on the tuple
+        for (unsigned i = 0; i < cond.size(); i++) {
+          // compute the difference between the tuple value and the condition value
+          switch (cond[i].attr) {
+          case 1:
+        diff = key - atoi(cond[i].value);
+        break;
+          case 2:
+        diff = strcmp(value.c_str(), cond[i].value);
+        break;
+          }
+
+          // skip the tuple if any condition is not met
+          switch (cond[i].comp) {
+          case SelCond::EQ:
+        if (diff != 0) goto next_tuple;
+        break;
+          case SelCond::NE:
+        if (diff == 0) goto next_tuple;
+        break;
+          case SelCond::GT:
+        if (diff <= 0) goto next_tuple;
+        break;
+          case SelCond::LT:
+        if (diff >= 0) goto next_tuple;
+        break;
+          case SelCond::GE:
+        if (diff < 0) goto next_tuple;
+        break;
+          case SelCond::LE:
+        if (diff > 0) goto next_tuple;
+        break;
+          }
+        }
+
+        // the condition is met for the tuple. 
+        // increase matching tuple counter
+        count++;
+
+        // print the tuple 
+        switch (attr) {
+        case 1:  // SELECT key
+          fprintf(stdout, "%d\n", key);
+          break;
+        case 2:  // SELECT value
+          fprintf(stdout, "%s\n", value.c_str());
+          break;
+        case 3:  // SELECT *
+          fprintf(stdout, "%d '%s'\n", key, value.c_str());
+          break;
+        }
+
+        // move to the next tuple
+        next_tuple:
+        ++rid;
+        }
     }
-
-    // the condition is met for the tuple. 
-    // increase matching tuple counter
-    count++;
-
-    // print the tuple 
-    switch (attr) {
-    case 1:  // SELECT key
-      fprintf(stdout, "%d\n", key);
-      break;
-    case 2:  // SELECT value
-      fprintf(stdout, "%s\n", value.c_str());
-      break;
-    case 3:  // SELECT *
-      fprintf(stdout, "%d '%s'\n", key, value.c_str());
-      break;
+    else{
+        
+        int i = -1;
+        int cond_size = cond.size();
+        
+        for(i=0; i<cond_size; i++){
+            if(cond[i].attr == 1){ //only evaluate key conditions
+                
+                switch(cond[i].comp){
+                    case SelCond::EQ :
+                    {
+                        break;
+                    }
+                    case SelCond::GT :
+                    case SelCond::GE :
+                    {
+                        int flag = 0;
+                        for(int j = i; j<cond_size; j++){
+                            if(i == -1 || atoi(cond[j].value) > atoi(cond[i].value)){
+                                flag = 1;
+                                break;
+                            }
+                        }
+                        if(flag)
+                            break;
+                        
+                    }
+                    default:
+                        continue;
+                }
+            }
+        }
+        
+        //Locate node
+        vector<PageId> empty_parents;
+        i > -1 ? bt_index.locate(atoi(cond[i].value), i_cursor, ROOT_DEPTH, empty_parents) : bt_index.locate(0, i_cursor, ROOT_DEPTH, empty_parents);
+        
+        while(!(bt_index.readForward(i_cursor, key, rid))){
+            
+            rc = rf.read(rid, key, value);
+            if(rc != 0){
+                fprintf(stderr, "Error reading tuple");
+                goto exit_select;
+            }
+            
+            for(int j=0; j<cond_size; j++){
+                if(cond[i].attr == 1){
+                    diff = key - atoi(cond[i].value);
+                }
+                else if(cond[i].attr == 2){
+                    diff = strcmp(value.c_str(), cond[i].value);
+                }
+                else{
+                    fprintf(stderr, "Invalid value for cond attr");
+                    goto exit_select;
+                }
+            }
+            
+            switch(cond[i].comp){
+                case SelCond::EQ:{
+                    if(diff != 0){
+                        if(cond[i].attr == 1)
+                            goto count_star_exit;
+                        continue;
+                    }
+                    break;
+                }
+                case SelCond::NE:{
+                    if(diff == 0)
+                        continue;
+                    break;
+                }
+                case SelCond::GT:{
+                    if(diff <= 0) continue;
+                    break;
+                }
+                case SelCond::LT:{
+                    if(diff >= 0){
+                        if(cond[i].attr == 1)
+                            goto count_star_exit;
+                        continue;
+                    }
+                    break;
+                }
+                case SelCond::GE:{
+                    if(diff < 0)
+                        continue;
+                    break;
+                }
+                case SelCond::LE:{
+                    if(diff > 0){
+                        if(cond[i].attr == 1)
+                            goto count_star_exit;
+                        continue;
+                    }
+                    break;
+                }
+                default:{
+                    fprintf(stderr, "Invalid comp value");
+                    break;
+                }
+            }
+            
+            count++;
+            
+            if(attr == 1){
+                fprintf(stdout, "%d\n", key);
+            }
+            else if(attr == 2){
+                fprintf(stdout, "%s\n", value.c_str());
+            }
+            else if(attr == 3){
+                fprintf(stdout, "%d '%s'\n", key, value.c_str());
+            }
+            else{
+                //Not printing anything because count(*)
+            }
+        }
+        
+        //iterate through conditions
     }
-
-    // move to the next tuple
-    next_tuple:
-    ++rid;
-  }
 
   // print matching tuple count if "select count(*)"
+count_star_exit:
   if (attr == 4) {
     fprintf(stdout, "%d\n", count);
   }
@@ -124,8 +253,8 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
 
   // close the table file and return
   exit_select:
-  rf.close();
-  return rc;
+    rf.close();
+    return rc;
 }
 
 RC SqlEngine::load(const string& table, const string& loadfile, bool index)
@@ -138,6 +267,7 @@ RC SqlEngine::load(const string& table, const string& loadfile, bool index)
 	//file descriptors
 	ifstream inputStream;
 	RecordFile rf;
+        BTreeIndex bt_index;
 
 	//vars for table
 	int key;
@@ -151,11 +281,17 @@ RC SqlEngine::load(const string& table, const string& loadfile, bool index)
 		RC status = rf.open(table + ".tbl", 'w');
 		if(status != 0)
 			return status;	
-
+                if(index){
+                    status = bt_index.open(table + ".idx",'w');
+                    if(status != 0)
+                        return status;
+                }
 		while(inputStream.good())
 		{
 			getline(inputStream, buffer);
-
+                        if(buffer == "")
+                            break;
+        
 			status = parseLoadLine(buffer, key, value);
 			if(status != 0)
 			{
@@ -167,20 +303,37 @@ RC SqlEngine::load(const string& table, const string& loadfile, bool index)
 			if(status != 0)
 			{
 				fprintf(stderr, "Couldn't insert key: %i\n",key );
+                                break;
 			}
 
-			//also add insert for index later
+                        if(index){
+                            status = bt_index.insert(key, rid);
+                            if(status != 0){
+                                fprintf(stderr, "Couldn't insert into index");
+                                break;
+                            }
+                        }
 		}
 
+                inputStream.close();
+                status = rf.close();
+                if(status != 0){
+                    fprintf(stderr, "Error closing recordFile\n");
+                    return status;
+                }
+                if(index){              
+                    status = bt_index.close();
+                    if(status != 0){
+                        fprintf(stderr, "Error closing BTreeIndex\n");
+                        return status
+;                   }
+                }
 		return status;	
 	}
 	else
 	{
 		fprintf(stderr, "Couldn't open handle for %s\n", loadfile.c_str() );
 	}
-
-	//check status here?
-	inputStream.close();
 
   return 0;
 }
