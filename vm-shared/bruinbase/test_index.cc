@@ -152,8 +152,48 @@ int test_simple_insert() {
 
 }
 
+int test_multi_insert(unsigned how_many) {
+    /* create an index and insert several values into it
+     * then readForward to retrieve all of them
+     * */
+    printf("\n\nTEST MULTI-INSERT()\n\n");
+    
+    // initialize index
+    RC status;
+    BTreeIndex index;
+    string index_filename = "multi_insertion_test.idx";
+    remove(index_filename.c_str());
+    index.open(index_filename, 'w');
+
+    int key = 100;
+    RecordId rid;
+    rid.pid = 1000;
+    rid.sid = 1;
+
+    // insert several values
+    {
+        for (int i = 0; i < how_many; ++i) {
+            status = index.insert(key, rid);
+            printf("index.insert() returned %i for key: %i, rid: {pid: %i, sid: %i}\n",
+                                                            status, key, rid.pid, rid.sid);
+            cout << "Done with " << i+1 << suffix(i+1) << " insertion.\n" << endl;
+            printf("= - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = \n");
+            key++;
+            rid.pid++;
+            rid.sid++;
+        }
+    }
+
+    // readForward the inserted values
+    {
+
+    }
+}
+
+int test_getKeyCount();
+
 int main() {
     test_locate();
     test_simple_insert();
-    // TODO: insert several values, test locate and readForward on them
+    test_multi_insert(5);
 }

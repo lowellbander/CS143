@@ -11,8 +11,12 @@ BTLeafNode::BTLeafNode():maxKeyCount(((PageFile::PAGE_SIZE) - sizeof(PageId))/si
 }
 
 void BTLeafNode::showEntries() {
-    printf("\nHere are the entries in this node:\n");
     int nKeys = getKeyCount();
+    if (nKeys == 0) {
+        printf("THE NODE IS EMPTY\n");
+        return;
+    }
+    printf("\nHere are the entries in this node:\n");
     int i = 0;
     for(Entry* current = (Entry*) buffer; i < nKeys; ++current, ++i) {
 
