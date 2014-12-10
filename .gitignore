@@ -10,4 +10,5 @@
 vm-shared/bruinbase/bruinbase
 test_index
 *.idx
+output.txt
 
