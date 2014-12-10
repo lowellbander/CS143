@@ -10,12 +10,10 @@
 #include "BTreeIndex.h"
 #include "BTreeNode.h"
 
-#define NO_DEPTH 0
-
 using namespace std;
 
 void print_pids(std::vector<PageId> pids) {
-    printf("current list of pid's:");
+    printf("current list of parent pid's:");
     for (vector<PageId>::const_iterator i = pids.begin(); i != pids.end(); ++i)
         cout << *i << ", ";
     printf("\n");
@@ -45,6 +43,7 @@ int BTreeIndex::getRootPid() { return rootPid; }
  * @return error code. 0 if no error
  */
 RC BTreeIndex::open(const string& indexname, char mode) {
+    // TODO: set rootPid, treeHeight
     return pf.open(indexname, mode);
 }
 
@@ -52,7 +51,10 @@ RC BTreeIndex::open(const string& indexname, char mode) {
  * Close the index file.
  * @return error code. 0 if no error
  */
-RC BTreeIndex::close() { return pf.close(); }
+RC BTreeIndex::close() { 
+    // TODO: save rootPid, treeHeight to file
+    return pf.close(); 
+}
 
 /*
  * Insert (key, RecordId) pair to the index.
@@ -62,8 +64,6 @@ RC BTreeIndex::close() { return pf.close(); }
  */
 RC BTreeIndex::insert(int key, const RecordId& rid) {
     RC status;
-
-    printf("CALLED index.INSERT()\n");
 
     // TODO: error codes
     // TODO: error if the page is full and cannot hold any more nodes
@@ -80,6 +80,9 @@ RC BTreeIndex::insert(int key, const RecordId& rid) {
         leaf.insert(key, rid);
         PageId leafPid = pf.endPid();
         status = leaf.write(leafPid, pf);
+        printf("leaf.write() returned %i. here's our newly created leaf:\n", status);
+        leaf.showEntries();
+        printf("the new leaf has %i keys\n", leaf.getKeyCount());
 
         // create the root node, point it to leaf 
         BTNonLeafNode root;
@@ -101,20 +104,28 @@ RC BTreeIndex::insert(int key, const RecordId& rid) {
 
         // find the leaf that we'd like to insert our key into
         IndexCursor cursor;
+        cursor.pid = rootPid;
+        cursor.eid = 0;
         vector<PageId> parents;
-        status = locate(key, cursor, NO_DEPTH, parents);
+        status = locate(key, cursor, ROOT_DEPTH, parents);
         // cursor.pid is now the pid of the leaf node that we'd like to insert into
         
         BTLeafNode leaf;
         PageId leafPid = cursor.pid;
         leaf.read(leafPid, pf);
+        printf("leaf.getKeyCount(): %i\n", leaf.getKeyCount());
 
         // if there's room we can insert here
-        if (!leaf.isFull()) return leaf.insert(key, rid);
-        // if (leaf.getKeyCount() < leaf.getMaxKeyCount()) {
-        //     return leaf.insert(key, rid);
-        // }
-        else {
+        if (!leaf.isFull()) {
+            printf("There's still room in this leaf for insertion()\n");
+            //leaf.showEntries();
+            status = leaf.insert(key, rid);
+            leaf.write(leafPid, pf);
+            printf("after insertion:\n");
+            leaf.showEntries();
+            return status;
+        } else {
+            printf("LEAF IS FULL! splitting and inserting midkey in parent\n");
             //{
             //    printf("this part of index::insert() not yet implemented\n");
             //    return -1;
@@ -128,45 +139,60 @@ RC BTreeIndex::insert(int key, const RecordId& rid) {
             int siblingKey = -1;
 
             leaf.insertAndSplit(key, rid, sibling, siblingKey);
+            leaf.write(leafPid, pf);
 
             // save the sibling to file
             int siblingPid = pf.endPid();
             sibling.write(siblingPid, pf);
 
-            int keyToInsert = key;
+            int keyToInsert = siblingKey;
             PageId pidToInsert = siblingPid;
+
+            print_pids(parents);
 
             for (vector<PageId>::reverse_iterator parent_pid_itr = parents.rbegin();
                     parent_pid_itr != parents.rend(); ++parent_pid_itr) {
 
+                printf("keyToInsert: %i, pidToInsert: %i\n", keyToInsert, pidToInsert);
+
                 BTNonLeafNode parent;
                 PageId parentPid = *parent_pid_itr;
                 parent.read(parentPid, pf);
+                printf("inserting into parent with pid %i\n", parentPid);
+                printf("before insert:\n");
+                parent.showEntriesWithFirstPageId();
 
                 // check to see if there is room in the parent
-                if (parent.getKeyCount() < parent.getMaxKeyCount()) {
+                if (!parent.isFull()) {
+                    printf("room in parent\n");
                     parent.insert(keyToInsert, pidToInsert);
-                    return parent.write(parentPid, pf);
+                    status = parent.write(parentPid, pf);
+                    printf("after insert:\n");
+                    parent.showEntriesWithFirstPageId();
+                    return status;
                 }
                 else {
                     // no room in parent, 
                     // parent, insert & split, then check for room in parent's
                     // parent until we can simply insert().
 
-                    BTNonLeafNode uncle;
+                    // NOTE: pibling is a non-gendered term to describe the
+                    // sibling of a parent. Credit: Aman Agarwal.
+                    BTNonLeafNode pibling;
                     int midKey = -1;
-                    parent.insertAndSplit(keyToInsert, pidToInsert, uncle, midKey);
-                    PageId unclePid = pf.endPid();
-                    uncle.write(unclePid, pf);
+                    parent.insertAndSplit(keyToInsert, pidToInsert, pibling, midKey);
+                    parent.write(parentPid, pf);
+                    PageId piblingPid = pf.endPid();
+                    pibling.write(piblingPid, pf);
 
                     keyToInsert = midKey;
-                    pidToInsert = unclePid;
+                    pidToInsert = piblingPid;
 
                     // check to see whether we need to create a new root
                     if (parentPid == rootPid) {
                         // create and properly initialize new root
                         BTNonLeafNode root;
-                        root.initializeRoot(parentPid, keyToInsert, unclePid);
+                        root.initializeRoot(parentPid, keyToInsert, piblingPid);
                         rootPid = pf.endPid(); // updates index.rootPid
                         return root.write(rootPid, pf);
                     }
@@ -219,7 +245,10 @@ RC BTreeIndex::locate(int searchKey, IndexCursor& cursor, int depth,
         BTNonLeafNode nonleaf;
         nonleaf.read(cursor.pid, pf);
 
-        printf("reading nonleaf with pid %i\n", cursor.pid);
+        if (cursor.pid == rootPid)
+            printf("reading root (pid: %i)\n", rootPid);
+        else
+            printf("reading nonleaf with pid %i\n", cursor.pid);
         nonleaf.showEntriesWithFirstPageId();
         
         // append the pid of this node to the list of parents
