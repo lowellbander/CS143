@@ -7,4 +7,5 @@
 * call `write()` after inserting into any node
 * set the pid of the cursor to the pid of the root node before calling `index::locate()`
 * whenever `index::locate()` is called, except by itself, the 3rd argument `depth` should be `ROOT_DEPTH`.
-* the maximum number of keys in a `BTNonLeafNode` is 85
+* the maximum number of keys in a `BTLeafNode` is 85
+* the maximum number of keys in a `BTNonLeafNode` is 126
