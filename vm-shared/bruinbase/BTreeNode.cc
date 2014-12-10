@@ -307,7 +307,7 @@ RC BTNonLeafNode::write(PageId pid, PageFile& pf){
  */
 int BTNonLeafNode::getKeyCount() {
     int nKeys = 0;
-    for (Entry* current = (Entry*) buffer; 
+    for (Entry* current = (Entry*) (buffer+ENTRY_OFFSET); 
             current->key != 0 && nKeys < maxKeyCount;
             ++current, ++nKeys) {}
     //TODO: 0 keys ?
@@ -330,13 +330,19 @@ RC BTNonLeafNode::insert(int key, PageId pid){
 RC BTNonLeafNode::insertWithoutSizeCheck(int key, PageId pid) { 
     Entry *entries = (Entry*) (buffer+ENTRY_OFFSET);
 
+    printf("hello there\n");
+    showEntriesWithFirstPageId();
     //find the index where the (key, pid) Entry should be inserted
     int nKeys = getKeyCount();    
+    printf("this nonleaf has %i keys\n", nKeys);
     int index;
+    printf("the key we're trying to insert is %i\n", key);
     for (index = 0; index < nKeys; ++index) {
+        printf("the key we're comparing against is %i\n", entries[index].key);
         if (entries[index].key >= key)
             break;
     }
+    printf("we should insert at index %i\n", index);
 
     // shift over the entries to the right of this 
     

@@ -183,11 +183,6 @@ int test_multi_insert(unsigned how_many) {
             rid.sid++;
         }
     }
-
-    // readForward the inserted values
-    {
-
-    }
 }
 
 int test_getKeyCount();
@@ -195,5 +190,5 @@ int test_getKeyCount();
 int main() {
     test_locate();
     test_simple_insert();
-    test_multi_insert(5);
+    test_multi_insert(90);
 }
